@@ -1,0 +1,41 @@
+# --- Secrets: never commit real credentials ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+service-account*.json
+credentials*.json
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+
+# --- Tooling caches ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Local data / model checkpoints (Laya etc.) ---
+data/
+models/
+*.ckpt
+*.safetensors
+
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Phase 10: local database backups and runtime files (never commit)
+backups/
+run/

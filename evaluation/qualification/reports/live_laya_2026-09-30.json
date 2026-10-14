@@ -1,0 +1,171 @@
+{
+  "dataset": "qualification-labeled-cases",
+  "version": "2026-09-30.1",
+  "laya_mode": "live",
+  "cases": 28,
+  "decision_accuracy": 0.75,
+  "hard_path_accuracy": 1.0,
+  "event_count_checks": "2/2",
+  "false_qualified": [],
+  "confusion_label_x_predicted": {
+    "qualified": {
+      "qualified": 0,
+      "review": 7,
+      "not_qualified": 0
+    },
+    "review": {
+      "qualified": 0,
+      "review": 7,
+      "not_qualified": 0
+    },
+    "not_qualified": {
+      "qualified": 0,
+      "review": 0,
+      "not_qualified": 14
+    }
+  },
+  "by_category": {
+    "clear_funding": {
+      "cases": 2,
+      "correct": 0
+    },
+    "funding_above_cap": {
+      "cases": 2,
+      "correct": 2
+    },
+    "funding_outside_window": {
+      "cases": 2,
+      "correct": 2
+    },
+    "missing_funding_amount": {
+      "cases": 2,
+      "correct": 2
+    },
+    "strong_ai_intent": {
+      "cases": 2,
+      "correct": 0
+    },
+    "strong_expansion": {
+      "cases": 2,
+      "correct": 0
+    },
+    "weak_generic_news": {
+      "cases": 2,
+      "correct": 2
+    },
+    "irrelevant_mention": {
+      "cases": 2,
+      "correct": 2
+    },
+    "namesake_noisy": {
+      "cases": 2,
+      "correct": 2
+    },
+    "duplicate_coverage": {
+      "cases": 2,
+      "correct": 1
+    },
+    "conflicting_evidence": {
+      "cases": 2,
+      "correct": 2
+    },
+    "insufficient_evidence": {
+      "cases": 2,
+      "correct": 2
+    },
+    "ambiguous_review": {
+      "cases": 2,
+      "correct": 2
+    },
+    "identity_geography": {
+      "cases": 2,
+      "correct": 2
+    }
+  },
+  "mismatches": [
+    {
+      "id": "Q01",
+      "category": "clear_funding",
+      "label": "qualified",
+      "predicted": "review",
+      "laya": "ok",
+      "score": 0.6395,
+      "reasons": [
+        "path both: round ₹4 Cr <= cap ₹5 Cr within 90d ('Kheti Labs raises Rs 4 crore seed round to automate farm procurement'); 1 attributed recent intent event(s): ai_interest",
+        "laya: ambiguous (P(fit)=0.64, attribution=0.62, trigger=funding, evidence level=1.62)"
+      ]
+    },
+    {
+      "id": "Q02",
+      "category": "clear_funding",
+      "label": "qualified",
+      "predicted": "review",
+      "laya": "ok",
+      "score": 0.6583,
+      "reasons": [
+        "path both: round ₹3.5 Cr <= cap ₹5 Cr within 90d ('Parcelwise bags Rs 3.5 crore pre-seed funding led by angel network'); 1 attributed recent intent event(s): ai_interest, expansion",
+        "laya: ambiguous (P(fit)=0.66, attribution=0.62, trigger=funding, evidence level=1.59)"
+      ]
+    },
+    {
+      "id": "Q09",
+      "category": "strong_ai_intent",
+      "label": "qualified",
+      "predicted": "review",
+      "laya": "ok",
+      "score": 0.643,
+      "reasons": [
+        "path intent: 2 attributed recent intent event(s): ai_interest, product_customer",
+        "laya: ambiguous (P(fit)=0.64, attribution=0.59, trigger=ai_automation, evidence level=1.50)"
+      ]
+    },
+    {
+      "id": "Q10",
+      "category": "strong_ai_intent",
+      "label": "qualified",
+      "predicted": "review",
+      "laya": "ok",
+      "score": 0.6469,
+      "reasons": [
+        "path intent: 2 attributed recent intent event(s): ai_interest, expansion, product_customer",
+        "laya: ambiguous (P(fit)=0.65, attribution=0.58, trigger=expansion, evidence level=1.51)"
+      ]
+    },
+    {
+      "id": "Q11",
+      "category": "strong_expansion",
+      "label": "qualified",
+      "predicted": "review",
+      "laya": "ok",
+      "score": 0.6474,
+      "reasons": [
+        "path intent: 2 attributed recent intent event(s): expansion, product_customer",
+        "laya: ambiguous (P(fit)=0.65, attribution=0.58, trigger=expansion, evidence level=1.54)"
+      ]
+    },
+    {
+      "id": "Q12",
+      "category": "strong_expansion",
+      "label": "qualified",
+      "predicted": "review",
+      "laya": "ok",
+      "score": 0.6166,
+      "reasons": [
+        "path intent: 2 attributed recent intent event(s): expansion, hiring",
+        "laya: ambiguous (P(fit)=0.62, attribution=0.55, trigger=hiring_growth, evidence level=1.44)"
+      ]
+    },
+    {
+      "id": "Q19",
+      "category": "duplicate_coverage",
+      "label": "qualified",
+      "predicted": "review",
+      "laya": "ok",
+      "score": 0.6426,
+      "reasons": [
+        "path funding: round ₹4.5 Cr <= cap ₹5 Cr within 90d ('Blume backs Quikcart with Rs 4.5 crore')",
+        "laya: ambiguous (P(fit)=0.64, attribution=0.59, trigger=funding, evidence level=1.62)"
+      ]
+    }
+  ]
+}

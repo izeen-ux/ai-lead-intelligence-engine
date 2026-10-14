@@ -1,0 +1,127 @@
+{
+  "catalog_id": "technotribes-services",
+  "version": "2026-10-01.1",
+  "source": "E:/MY PROJECT'S/ai-client-automation/app/knowledge/services.json (TechnoTribes approved company & service information, 'the ONLY source of truth'); copied 2026-10-01",
+  "derivation_note": "name/description/target_buyer are taken from the approved file. target_company_characteristics, trigger_patterns, problem_patterns, evidence_requirements and hook_style are structured restatements of the approved wording for matching - they add no prices, durations, case studies, guarantees or free offers (the approved file lists those as unconfirmed).",
+  "company": {
+    "name": "TechnoTribes",
+    "description": "We help businesses work out where AI genuinely helps, then build it and take it into real production workflows."
+  },
+  "global_constraints": [
+    "Never quote prices (pricing_policy.ai_may_quote_prices = false).",
+    "Never mention case studies, client names or results (none are approved).",
+    "Never promise durations for audits or automation projects (unconfirmed).",
+    "Never offer free teardowns or free demo agents (unconfirmed).",
+    "Only recommend one of the offers below; never invent a service."
+  ],
+  "offers": [
+    {
+      "offer_id": "ai_hiring_rekroots",
+      "name": "AI Hiring - Rekroots",
+      "description": "AI-led hiring with Rekroots: a job board plus AI-led interviews that helps move from an open role toward a shortlist with less manual screening and scheduling.",
+      "target_buyer": "Founders, HR or talent leaders at companies with open roles to fill.",
+      "target_company_characteristics": ["actively hiring", "growing team", "several open roles at once"],
+      "trigger_patterns": ["hiring announcements", "job openings", "team expansion", "new office or plant needing staff"],
+      "problem_patterns": ["manual candidate screening", "interview scheduling overhead", "slow time from open role to shortlist"],
+      "constraints": ["Only when there is evidence of hiring or team growth."],
+      "evidence_requirements": ["at least one recent hiring or team-growth event about the company"],
+      "hook_style": "Reference the specific hiring/growth event; offer a faster path from open role to shortlist."
+    },
+    {
+      "offer_id": "ai_audit_nbfc",
+      "name": "AI for NBFCs - AI Audit",
+      "description": "A paid AI audit for regulated financial-services organizations: identifies AI opportunities ranked by payoff and effort, considers compliance gates such as RBI and DPDP, and identifies where AI should not be used.",
+      "target_buyer": "Leaders at NBFCs and other regulated financial-services organizations exploring AI.",
+      "target_company_characteristics": ["NBFC or regulated lender", "financial services", "credit / leasing / lending business"],
+      "trigger_patterns": ["financing or leasing launches", "lending partnerships", "regulated-finance growth", "AI interest in a regulated finance context"],
+      "problem_patterns": ["unclear where AI is safe under RBI / DPDP rules", "compliance risk of AI adoption", "many possible AI use cases without prioritisation"],
+      "constraints": ["Only for regulated financial-services organizations (NBFC / lender / financier).", "It is a paid engagement - do not imply otherwise."],
+      "evidence_requirements": ["evidence that the company is or operates as a regulated financial-services business"],
+      "hook_style": "Compliance-aware: prioritised AI opportunities that respect RBI/DPDP gates."
+    },
+    {
+      "offer_id": "enterprise_ai_implementation",
+      "name": "Enterprise AI Implementation",
+      "description": "Takes AI projects from stalled pilots or prototypes toward real production workflows, starting with a focused, paid two-week pilot on one real workflow measured against a business metric the client selects.",
+      "target_buyer": "Teams whose AI pilots or prototypes have stalled before reaching production.",
+      "target_company_characteristics": ["already experimenting with AI", "existing AI pilot or prototype", "larger or enterprise-scale operations"],
+      "trigger_patterns": ["AI pilot announcements", "AI adoption statements", "technology modernisation programmes"],
+      "problem_patterns": ["AI pilots not reaching production", "prototype without production workflow", "unclear business metric for AI"],
+      "constraints": ["Requires evidence of existing AI work or AI adoption intent.", "Starts with a focused paid two-week pilot on one workflow."],
+      "evidence_requirements": ["evidence of AI interest, an AI pilot or AI adoption"],
+      "hook_style": "Production-focused: one real workflow, measured against a metric they choose."
+    },
+    {
+      "offer_id": "prototype_30_day",
+      "name": "30-Day Prototype",
+      "description": "A production-oriented prototype (real code, not a mockup) for teams that know what they want to build but need development capacity; the client owns the code.",
+      "target_buyer": "Founders or product leaders who know what they want to build but lack development capacity.",
+      "target_company_characteristics": ["early-stage or recently funded", "product being built or launched", "small engineering team"],
+      "trigger_patterns": ["recent funding to build product", "new product or platform launch", "product roadmap announcements"],
+      "problem_patterns": ["not enough development capacity", "need a production-oriented build quickly", "idea defined but not built"],
+      "constraints": ["Client owns the code.", "Do not promise a fixed timeline beyond the offer name."],
+      "evidence_requirements": ["evidence of a product/platform being built or launched, or funding raised to build"],
+      "hook_style": "Capacity-focused: real production-oriented code they own."
+    },
+    {
+      "offer_id": "ai_presales_agents",
+      "name": "AI Presales Agents",
+      "description": "AI agents for early sales and presales conversations: answer common questions, qualify leads, use the company's own documentation and support the booking/handoff process, reducing repetitive early-funnel questions for sales reps.",
+      "target_buyer": "Sales or revenue leaders whose reps handle repetitive early-funnel questions.",
+      "target_company_characteristics": ["B2B sales motion", "growing customer acquisition", "many inbound enquiries or partners"],
+      "trigger_patterns": ["new customers or partnerships", "market expansion", "sales team growth", "new product launches to many buyers"],
+      "problem_patterns": ["reps answering the same early-funnel questions", "slow lead qualification", "booking/handoff friction"],
+      "constraints": ["Uses the company's own documentation."],
+      "evidence_requirements": ["evidence of customer acquisition, partnerships or sales growth"],
+      "hook_style": "Sales-capacity: let an agent handle repetitive early questions and qualification."
+    },
+    {
+      "offer_id": "healthcare_ai_workflows",
+      "name": "Healthcare AI Workflows",
+      "description": "AI audit and workflow services for healthcare organizations that handle patient data, emphasising patient-data risk, consent and DPDP requirements, identifying AI opportunities and where AI should and should not be used.",
+      "target_buyer": "Leaders at healthcare organizations handling patient data.",
+      "target_company_characteristics": ["healthcare provider", "clinics, hospitals or health-tech handling patient data"],
+      "trigger_patterns": ["healthcare expansion", "new clinics or locations", "health-tech product launches"],
+      "problem_patterns": ["patient-data risk", "consent and DPDP requirements", "unclear safe AI use in care workflows"],
+      "constraints": ["Only for healthcare organizations that handle patient data."],
+      "evidence_requirements": ["evidence that the company is a healthcare organization handling patient data"],
+      "hook_style": "Risk-aware: AI opportunities that respect patient-data consent and DPDP."
+    },
+    {
+      "offer_id": "partner_model_agencies",
+      "name": "Partner Model for Agencies",
+      "description": "A white-label AI development partnership for agencies whose clients ask for AI work: we act as the AI build team behind the agency's client work (white-label AI products and MVPs) on a paid, pilot-first model.",
+      "target_buyer": "Agency founders or delivery heads whose clients ask for AI work.",
+      "target_company_characteristics": ["digital, marketing, software or design agency", "client-services business"],
+      "trigger_patterns": ["agency launching AI services", "clients asking for AI", "agency growth"],
+      "problem_patterns": ["no in-house AI build team", "AI requests from clients the agency cannot deliver"],
+      "constraints": ["Only for agencies.", "Paid, pilot-first."],
+      "evidence_requirements": ["evidence that the company is an agency serving clients"],
+      "hook_style": "Partner-focused: be the white-label AI build team behind their client work."
+    },
+    {
+      "offer_id": "ai_automation",
+      "name": "AI Automation",
+      "description": "Automation of repetitive operational workflows (e.g. chasing documents, answering repetitive customer questions, moving data between systems, repetitive admin work), one workflow at a time, using the client's existing tools.",
+      "target_buyer": "Operations leaders or founders of teams losing time to repetitive work.",
+      "target_company_characteristics": ["operations-heavy", "scaling operations", "many repetitive processes"],
+      "trigger_patterns": ["operational expansion", "capacity growth", "new locations, fleets or customers", "automation interest"],
+      "problem_patterns": ["chasing documents", "repetitive customer questions", "moving data between systems", "repetitive administrative work"],
+      "constraints": ["One workflow at a time.", "Uses the client's existing tools."],
+      "evidence_requirements": ["evidence of operational scale-up or repetitive operational work"],
+      "hook_style": "Operations-focused: automate one repetitive workflow with the tools they already use."
+    },
+    {
+      "offer_id": "ai_audit_general",
+      "name": "General AI Audit",
+      "description": "A general AI audit for businesses that want to know where AI is useful and what to implement first: top AI opportunities ranked by payoff, effort estimates, where AI should not be used and an implementation sequence.",
+      "target_buyer": "Founders or leaders unsure where AI would help or what to do first.",
+      "target_company_characteristics": ["any qualified business", "no clear AI plan yet"],
+      "trigger_patterns": ["growth or funding without a clear AI plan", "general AI interest"],
+      "problem_patterns": ["unclear where AI helps", "no prioritised AI plan", "risk of using AI where it should not be used"],
+      "constraints": ["Default when evidence supports AI value but no specific offer fits better."],
+      "evidence_requirements": ["evidence of a qualifying business trigger (funding, growth or AI interest)"],
+      "hook_style": "Clarity-focused: where AI pays off first, and where it should not be used."
+    }
+  ]
+}

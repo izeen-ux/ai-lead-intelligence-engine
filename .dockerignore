@@ -1,0 +1,23 @@
+# Nothing secret or local may enter an image layer.
+.env
+.env.*
+!.env.example
+secrets/
+backups/
+run/
+.git/
+.venv/
+.claude/
+**/__pycache__/
+**/*.pyc
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+tests/
+docs/
+**/node_modules/
+sidecars/enrichment-kit/vendor/
+*.md
+!README.md

@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Install
+        run: uv sync
+      - name: Lint
+        run: uv run ruff check . && uv run ruff format --check .
+      - name: Types
+        run: uv run mypy app tests scripts
+      - name: Tests (database tests are skipped without PostgreSQL)
+        run: uv run pytest -q
+      - name: Smoke check (offline, mock providers)
+        run: uv run python scripts/smoke_check.py

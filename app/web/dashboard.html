@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Lead Intelligence Engine</title>
+<style>
+  :root { --bg:#f7f8fa; --card:#ffffff; --soft:#f1f3f6; --text:#111827; --muted:#6b7280; --line:#e5e7eb;
+          --accent:#4f46e5; --accent-soft:rgba(79,70,229,.10); --ok:#059669; --ok-soft:rgba(5,150,105,.12);
+          --warn:#b45309; --warn-soft:rgba(180,83,9,.12); --bad:#dc2626; --bad-soft:rgba(220,38,38,.12);
+          --shadow:0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.06); --radius:12px; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0b0d12; --card:#12151c; --soft:#181c25; --text:#e7e9ee; --muted:#8b93a3; --line:#222733;
+            --accent:#818cf8; --accent-soft:rgba(129,140,248,.14); --ok:#34d399; --ok-soft:rgba(52,211,153,.14);
+            --warn:#fbbf24; --warn-soft:rgba(251,191,36,.14); --bad:#f87171; --bad-soft:rgba(248,113,113,.14);
+            --shadow:none; }
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; font:14px/1.5 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+         background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; }
+  a { color:var(--accent); text-decoration:none; } a:hover { text-decoration:underline; }
+  .muted { color:var(--muted); }
+  .ok { color:var(--ok); } .warn { color:var(--warn); } .bad { color:var(--bad); }
+
+  /* ---- header */
+  header { position:sticky; top:0; z-index:5; display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+           padding:12px 24px; border-bottom:1px solid var(--line);
+           background:color-mix(in srgb, var(--card) 86%, transparent); backdrop-filter:blur(10px); }
+  .brand { display:flex; align-items:center; gap:10px; }
+  .brand i { width:26px; height:26px; border-radius:8px; background:linear-gradient(135deg, var(--accent), #22d3ee); }
+  header h1 { font-size:15px; font-weight:650; margin:0; letter-spacing:-.01em; }
+  header .muted { font-size:12px; }
+  .chip { display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:999px; font-size:12px;
+          font-weight:600; background:var(--soft); color:var(--muted); }
+  .chip::before { content:""; width:7px; height:7px; border-radius:50%; background:currentColor; }
+  .chip.live { background:var(--ok-soft); color:var(--ok); }
+  .chip.live::before { animation:pulse 1.8s ease-out infinite; }
+  .chip.safe { background:var(--warn-soft); color:var(--warn); }
+
+  /* ---- layout */
+  main { padding:24px; display:grid; gap:18px; max-width:1240px; margin:0 auto; }
+  main > * { min-width:0; }  /* wide tables scroll inside their panel, not the page */
+  section, details.panel { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+           padding:20px; box-shadow:var(--shadow); animation:rise .45s cubic-bezier(.2,.7,.2,1) both; }
+  main > :nth-child(2) { animation-delay:.04s; } main > :nth-child(3) { animation-delay:.08s; }
+  main > :nth-child(4) { animation-delay:.12s; } main > :nth-child(5) { animation-delay:.16s; }
+  main > :nth-child(6) { animation-delay:.20s; } main > :nth-child(n+7) { animation-delay:.24s; }
+  h2 { font-size:15px; font-weight:650; margin:0 0 4px; letter-spacing:-.01em; }
+  h2 .muted, h3 .muted { font-weight:400; font-size:12px; }
+  h3 { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:18px 0 8px; }
+  .sub { color:var(--muted); margin:0 0 14px; max-width:860px; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width: 900px) { .grid2 { grid-template-columns:1fr; } main { padding:14px; } }
+  .scroll { overflow-x:auto; }
+  pre { white-space:pre-wrap; word-break:break-word; font-size:12px; margin:0; color:var(--muted); }
+  code { background:var(--soft); padding:2px 7px; border-radius:6px; font-size:12.5px; }
+
+  /* ---- controls */
+  button, select, input, textarea { font:inherit; color:inherit; background:var(--card); border:1px solid var(--line);
+     border-radius:8px; padding:7px 11px; transition:border-color .15s, box-shadow .15s, background .15s, transform .08s; }
+  select, input, textarea { outline:none; }
+  select:focus, input:focus, textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  button { cursor:pointer; font-weight:500; }
+  button:hover { background:var(--soft); } button:active { transform:scale(.97); }
+  button.primary { background:var(--accent); color:#fff; border-color:transparent; }
+  button.primary:hover { filter:brightness(1.08); background:var(--accent); }
+  button:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+  textarea { width:100%; min-height:64px; resize:vertical; }
+  .field { display:flex; flex-direction:column; gap:5px; font-size:12px; color:var(--muted); }
+  .field select, .field input { min-width:150px; color:var(--text); }
+
+  /* ---- tables */
+  table { width:100%; border-collapse:collapse; }
+  th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; }
+  tr:last-child td { border-bottom:0; }
+  tr.click { cursor:pointer; transition:background .12s; } tr.click:hover { background:var(--soft); }
+  table.kv th { width:170px; text-transform:none; letter-spacing:0; font-size:12px; }
+  .num { font-variant-numeric:tabular-nums; }
+  .pill { display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:500; background:var(--soft); color:var(--muted); white-space:nowrap; }
+  .pill.good { background:var(--ok-soft); color:var(--ok); } .pill.wait { background:var(--warn-soft); color:var(--warn); }
+
+  /* ---- numbers at the top */
+  .cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:10px; }
+  @media (max-width: 700px) { .cards { grid-template-columns:repeat(2, 1fr); } }
+  .card { border:1px solid var(--line); border-radius:10px; padding:14px; transition:transform .18s, border-color .18s; }
+  .card:hover { transform:translateY(-2px); border-color:var(--accent); }
+  .card b { display:block; font-size:26px; font-weight:650; line-height:1.1; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+  .card span { display:block; margin-top:4px; font-size:13px; }
+  .card small { display:block; color:var(--muted); font-size:11px; }
+  .card.good b { color:var(--ok); } .card.wait b { color:var(--warn); }
+
+  /* ---- how it works */
+  .flow { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:12px; }
+  .flow span { border:1px solid var(--line); border-radius:8px; padding:6px 10px; font-size:12px; color:var(--muted); }
+  .flow span b { display:block; font-size:13px; color:var(--text); font-weight:600; }
+  .flow i { color:var(--muted); font-style:normal; }
+  details > summary { cursor:pointer; font-weight:650; font-size:15px; list-style:none; display:flex; align-items:center; gap:8px; }
+  details > summary::-webkit-details-marker { display:none; }
+  details > summary::before { content:"›"; display:inline-block; color:var(--muted); transition:transform .2s; }
+  details[open] > summary::before { transform:rotate(90deg); }
+  details.panel > summary .muted { font-weight:400; font-size:12px; }
+  details.panel[open] > summary { margin-bottom:14px; }
+
+  /* ---- lock */
+  #lock { display:none; border-color:var(--warn); }
+  #lock ol { margin:8px 0 12px 18px; padding:0; } #lock li { margin:5px 0; }
+  #lock input { min-width:320px; }
+  body.locked main > *:not(#lock):not(.intro) { display:none; }
+  body.locked #token-row { display:none; }
+  body.focus main > *:not(#detail) { display:none; }
+  #detail { display:none; }
+
+  /* ---- run */
+  #run-prompt { min-height:96px; }
+  #run-go { padding:9px 26px; font-weight:600; }
+  #run-off { display:none; border:1px solid var(--warn); background:var(--warn-soft); border-radius:10px; padding:12px 14px; margin:0 0 14px; }
+  #run-off b { color:var(--warn); }
+  #run-progress { display:none; margin-top:16px; border:1px solid var(--line); border-radius:10px; padding:16px; position:relative; overflow:hidden; animation:rise .35s both; }
+  #run-progress.working::before { content:""; position:absolute; left:0; top:0; height:2px; width:35%; background:var(--accent); animation:slide 1.4s ease-in-out infinite; }
+  #run-title { display:block; font-weight:600; }
+  #run-steps { display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 4px; }
+  #run-steps span { display:inline-flex; align-items:center; gap:6px; padding:4px 11px; border-radius:999px; font-size:12px; background:var(--soft); color:var(--muted); transition:background .3s, color .3s; }
+  #run-steps span::before { content:""; width:6px; height:6px; border-radius:50%; background:currentColor; opacity:.5; }
+  #run-steps span.done { background:var(--ok-soft); color:var(--ok); } #run-steps span.done::before { opacity:1; }
+  #run-steps span.now { background:var(--accent-soft); color:var(--accent); font-weight:600; }
+  #run-steps span.now::before { opacity:1; animation:pulse 1.2s ease-out infinite; }
+  #run-steps span.fail { background:var(--bad-soft); color:var(--bad); }
+  #run-summary { margin:10px 0 0; padding:0; list-style:none; }
+  #run-summary li { padding:5px 0; color:var(--muted); animation:rise .35s both; }
+  #run-summary li b { color:var(--text); font-weight:600; }
+
+  /* ---- credits */
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:10px; }
+  .tile { border:1px solid var(--line); border-radius:10px; padding:14px; animation:rise .4s both; }
+  .tile.flash { animation:flash 1.6s ease-out; }
+  .tile .name { font-size:12px; color:var(--muted); display:flex; justify-content:space-between; gap:8px; }
+  .tile .name span:first-child { text-transform:capitalize; color:var(--text); font-weight:600; }
+  .tile .big { font-size:22px; font-weight:650; letter-spacing:-.02em; margin:6px 0 2px; font-variant-numeric:tabular-nums; }
+  .tile .big small { font-size:12px; font-weight:400; color:var(--muted); letter-spacing:0; }
+  .tile .line { font-size:12px; color:var(--muted); }
+  .tile .spent { color:var(--accent); font-weight:600; }
+  .tile .reset { font-size:12px; color:var(--muted); margin-top:8px; }
+  .tile .reset b { color:var(--text); font-weight:600; }
+  .tile .keys { margin:8px 0 0; padding:0; list-style:none; font-size:11px; color:var(--muted); }
+  .tile .keys li { display:flex; justify-content:space-between; gap:6px; padding:2px 0; border-top:1px dashed var(--line); }
+  .tile .keys .bad { color:var(--bad); }
+  /* credit calendar */
+  .cal-wrap { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-top:6px; }
+  .cal { border:1px solid var(--line); border-radius:10px; padding:12px; }
+  .cal h4 { margin:0 0 8px; font-size:13px; font-weight:600; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7, 1fr); gap:3px; text-align:center; font-size:12px; }
+  .cal-grid .dow { color:var(--muted); font-size:10px; text-transform:uppercase; }
+  .cal-grid .d { padding:5px 0; border-radius:6px; position:relative; }
+  .cal-grid .d.today { outline:1px solid var(--accent); }
+  .cal-grid .d.reset { background:var(--ok-soft); color:var(--ok); font-weight:700; cursor:help; }
+  .cal-grid .d.reset::after { content:""; position:absolute; left:50%; bottom:2px; width:4px; height:4px; margin-left:-2px; border-radius:50%; background:var(--ok); }
+  .cal-list { margin:0; padding:0; list-style:none; }
+  .cal-list li { display:flex; gap:10px; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px; animation:rise .35s both; }
+  .cal-list li:last-child { border-bottom:0; }
+  .cal-list .date { min-width:92px; font-weight:600; }
+  .cal-list .in { color:var(--muted); font-size:12px; }
+  .bar { height:5px; border-radius:3px; background:var(--soft); overflow:hidden; margin-top:10px; }
+  .bar i { display:block; height:100%; width:0; background:var(--ok); border-radius:3px; transition:width .9s cubic-bezier(.2,.7,.2,1); }
+  .bar i.low { background:var(--bad); } .bar i.mid { background:var(--warn); }
+
+  @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  @keyframes pulse { 0% { box-shadow:0 0 0 0 currentColor; } 70% { box-shadow:0 0 0 6px transparent; } 100% { box-shadow:0 0 0 0 transparent; } }
+  @keyframes slide { 0% { left:-35%; } 100% { left:100%; } }
+  @keyframes flash { 0% { border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft); } 100% { border-color:var(--line); box-shadow:none; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <span class="brand"><i></i><h1>AI Lead Intelligence Engine</h1></span>
+  <span class="chip" id="mode-chip">…</span>
+  <span class="muted" id="backend">loading…</span>
+  <span class="row" id="token-row" style="margin:0 0 0 auto">
+    <button id="refresh">Refresh</button>
+    <button id="token-forget">Lock</button>
+  </span>
+</header>
+<main>
+  <section id="lock">
+    <h2>Unlock the dashboard</h2>
+    <p class="sub">The data is protected by an operator token so nobody else on the network can read your
+      leads. You enter it once; this browser remembers it.</p>
+    <ol>
+      <li>In PowerShell, in the project folder, run:
+        <code>uv run python scripts/copy_operator_token.py</code>
+        - it copies the token to the clipboard (nothing is shown on screen).</li>
+      <li>Click the box below, press <b>Ctrl+V</b>, then <b>Unlock</b>.</li>
+    </ol>
+    <div class="row">
+      <input id="token" type="password" placeholder="paste operator token here" autocomplete="off">
+      <button id="token-save" class="primary">Unlock</button>
+      <span id="lock-msg" class="bad"></span>
+    </div>
+  </section>
+
+  <details class="panel intro">
+    <summary>How it works <span class="muted">8 steps from a search to a row in the Google Sheet</span></summary>
+    <p class="sub">It finds young Indian companies that just raised a small round or are visibly growing,
+      checks each one against fixed qualification rules, finds a verified decision-maker
+      contact, and writes an evidence-based AI outreach angle. Every value links back to the
+      public source it came from; nothing is guessed.</p>
+    <div class="flow">
+      <span><b>1 Discover</b>news, LinkedIn, X, Reddit</span><i>→</i>
+      <span><b>2 Pre-screen</b>free check before paid scraping</span><i>→</i>
+      <span><b>3 Verify website</b>official site + pages</span><i>→</i>
+      <span><b>4 Signals</b>funding, hiring, launches</span><i>→</i>
+      <span><b>5 Qualify</b>India · round ≤ ₹5 Cr or recent intent</span><i>→</i>
+      <span><b>6 Enrich</b>verified founder email</span><i>→</i>
+      <span><b>7 AI analysis</b>offer + outreach hook</span><i>→</i>
+      <span><b>8 Google Sheet</b>tab “Ai Leads”</span>
+    </div>
+  </details>
+
+  <section>
+    <h2>Overview</h2>
+    <p class="sub">Where the companies are right now.</p>
+    <div class="cards" id="pipeline"></div>
+    <p class="muted" id="funnel" style="margin:12px 0 0; font-size:12px"></p>
+  </section>
+
+  <section>
+    <h2>Find new leads <span class="muted" id="run-mode"></span></h2>
+    <p class="sub">Say what you are looking for (for example <i>healthtech startups that raised
+      funding recently</i>) or write your own search words, one search per line. Empty = the
+      saved default searches. Set <b>Leads wanted</b>: the run keeps searching in rounds until it
+      has that many new leads or runs out of rounds. One round takes about <b>5-10 minutes</b>.
+      New leads go to the Google Sheet tab <b>Ai Leads</b> and the <b>Leads</b> table below.</p>
+    <div id="run-off">
+      <b>Run is switched OFF (safe mode).</b> Nothing can spend credits right now, so the Run
+      button will not start anything. To switch it on, run this in PowerShell in the project
+      folder, wait until it finishes, then click <b>Refresh</b> at the top of this page:
+      <div style="margin:8px 0"><code>uv run python scripts/live_mode.py on</code></div>
+      Switch it off again afterwards with <code>uv run python scripts/live_mode.py off</code>.
+    </div>
+    <textarea id="run-prompt" maxlength="2000" placeholder="startup raises Rs 2 crore seed funding&#10;Indian startup raises $300K pre-seed&#10;healthtech startup raises Rs 2 crore"></textarea>
+    <div class="row" style="margin:12px 0 0; align-items:flex-end">
+      <label class="field">Lead owner <select id="run-owner"></select></label>
+      <label class="field">Leads wanted <input id="run-target" type="number" min="1" max="10" value="3" style="width:110px"></label>
+      <label class="field" title="How many companies each round checks. More = more leads per round, more credits.">Companies checked per round <input id="run-limit" type="number" min="1" max="25" value="25" style="width:150px"></label>
+      <button id="run-go" class="primary">Run</button>
+      <span id="run-result"></span>
+    </div>
+    <div id="run-progress">
+      <b id="run-title"></b>
+      <div id="run-steps"></div>
+      <ul id="run-summary"></ul>
+      <details id="run-queries-wrap" style="display:none; margin-top:8px"><summary class="muted" style="font-size:13px">Searches used</summary><pre id="run-queries"></pre></details>
+      <div id="run-credits-wrap" style="display:none">
+        <h3>Credits used by this run <span class="muted" id="run-credits-note"></span></h3>
+        <div class="tiles" id="run-credits"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Credits <span class="muted" id="credits-when"></span></h2>
+    <p class="sub">Used and left per provider. Updates by itself after every run.</p>
+    <div class="tiles" id="credits"></div>
+    <h3>Credit calendar <span class="muted">when each provider gives new credits (green days)</span></h3>
+    <div class="cal-wrap"><div class="cal" id="cal-months"></div><div class="cal"><h4>Coming up</h4><ul class="cal-list" id="cal-list"></ul></div></div>
+    <p class="muted" style="font-size:12px; margin:8px 0 0">Add a new key any time: <code>uv run python scripts/keys.py add apify</code>
+      (or firecrawl, hunter, apollo, claude). Used-up keys come back by themselves on their reset day.</p>
+    <h3>Credits per run</h3>
+    <div class="scroll"><table id="credit-runs"></table></div>
+    <p class="muted" id="screening" style="margin:12px 0 0; font-size:12px"></p>
+  </section>
+
+  <section>
+    <h2>Leads <span class="muted">click a row for evidence, contact and AI analysis</span></h2>
+    <div class="row" style="margin-top:10px">
+      <label class="field" style="flex-direction:row; align-items:center">Decision <select id="filter">
+        <option value="qualified">qualified</option><option value="review">review</option>
+        <option value="not_qualified">not qualified</option><option value="">all companies</option>
+      </select></label>
+    </div>
+    <div class="scroll"><table id="leads"></table></div>
+    <div class="row" style="margin:10px 0 0"><button data-page="leads" data-dir="-1">‹ Prev</button>
+      <button data-page="leads" data-dir="1">Next ›</button><span class="muted" id="leads-page"></span></div>
+  </section>
+
+  <section>
+    <h2>Review queue <span class="muted">a human decides these</span></h2>
+    <div class="scroll" style="margin-top:10px"><table id="queue"></table></div>
+    <div class="row" style="margin:10px 0 0"><button data-page="queue" data-dir="-1">‹ Prev</button>
+      <button data-page="queue" data-dir="1">Next ›</button><span class="muted" id="queue-page"></span></div>
+  </section>
+
+  <section id="detail">
+    <div class="row"><h2 id="d-title" style="margin:0"></h2><button id="d-close" style="margin-left:auto">Close</button></div>
+    <div class="grid2">
+      <div>
+        <h3>Qualification</h3><div id="d-qual"></div>
+        <h3>Evidence (clustered events)</h3><div class="scroll"><table id="d-events"></table></div>
+        <details style="margin-top:14px"><summary class="muted" style="font-size:13px">Trace ids</summary><pre id="d-trace"></pre></details>
+      </div>
+      <div>
+        <h3>Decision-maker contact</h3><div id="d-contact"></div>
+        <h3>Company profile</h3><div id="d-company"></div>
+        <details style="margin-top:8px"><summary class="muted" style="font-size:13px">Where each field came from</summary><div id="d-prov"></div></details>
+        <h3>AI analysis / offer angle</h3><div id="d-analysis"></div>
+        <details style="margin-top:14px"><summary class="muted" style="font-size:13px">Export record</summary><pre id="d-export"></pre></details>
+      </div>
+    </div>
+    <h3>Human review</h3>
+    <p class="muted">Approve needs the hard ICP rules to pass right now; every action creates a new,
+      immutable decision and an audit entry. No enrichment or AI call is made from here.</p>
+    <label class="field" style="margin-bottom:8px"><span>Reason <b style="color:var(--bad)">*</b></span>
+      <textarea id="r-reason" placeholder="Why? e.g. checked the news, it is the same company; round is within our range" maxlength="2000"></textarea></label>
+    <div class="row">
+      <label class="field"><span>Your name <b style="color:var(--bad)">*</b></span><input id="r-reviewer" placeholder="your name" maxlength="120"></label>
+      <label class="field">Decision <select id="r-action"><option value="approve">approve</option><option value="reject">reject</option>
+        <option value="reopen">reopen</option></select></label>
+      <button class="primary" id="r-submit" style="align-self:flex-end">Submit</button><span id="r-result" style="align-self:flex-end"></span>
+    </div>
+    <h3>Decision history</h3><div class="scroll"><table id="d-history"></table></div>
+    <h3>Review audit</h3><div class="scroll"><table id="d-reviews"></table></div>
+  </section>
+
+  <details class="panel">
+    <summary>Advanced <span class="muted">run history, exports, provider health, raw usage</span></summary>
+    <h3 style="margin-top:0">Pipeline runs <span class="muted" id="p-mode"></span></h3>
+    <div class="row">
+      <input id="p-name" placeholder="your name" maxlength="120">
+      <button id="p-dry">Start dry run</button>
+      <button id="p-live" class="primary" disabled>Start LIVE run</button>
+      <button id="p-recover">Recover stale run</button>
+      <span id="p-result"></span>
+    </div>
+    <p class="muted" style="font-size:12px">A dry run writes nothing. A LIVE run is only possible when the app itself was
+      started in live provider mode; every stage still passes its own gate and budget.</p>
+    <div class="scroll"><table id="p-runs"></table></div>
+    <pre id="p-detail" style="display:none; margin-top:8px"></pre>
+    <h3>Recent exports</h3>
+    <div class="scroll"><table id="exports"></table></div>
+    <div class="grid2">
+      <div>
+        <h3>Provider health <span class="muted">configuration only</span></h3>
+        <div class="scroll"><table id="providers"></table></div>
+      </div>
+      <div>
+        <h3>Usage &amp; cost <span class="muted">stored records</span></h3>
+        <div class="scroll"><table id="usage"></table></div>
+        <p class="muted" style="font-size:12px">provider_reported = value returned by the provider; ledger_estimate = this
+          app's estimate. Provider account dashboards remain the authority for credits.</p>
+      </div>
+    </div>
+  </details>
+</main>
+<script>
+"use strict";
+const PAGE = 15;
+const state = { queue: 0, leads: 0, current: null, live: false, flash: false };
+const $ = (id) => document.getElementById(id);
+
+function el(tag, text, cls) {
+  const e = document.createElement(tag);
+  if (text !== undefined && text !== null) e.textContent = String(text);
+  if (cls) e.className = cls;
+  return e;
+}
+function when(iso) {  // "2026-10-08T12:18:07+00:00" -> "8 Oct, 17:48" in the viewer's time zone
+  const d = new Date(iso);
+  return iso && !isNaN(d) ? d.toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : (iso || "");
+}
+function countUp(node, target) {  // small number animation; plain text when motion is reduced
+  const to = Number(target);
+  if (!isFinite(to) || matchMedia("(prefers-reduced-motion: reduce)").matches) { node.textContent = target; return; }
+  const from = Number(node.dataset.v || 0), t0 = performance.now();
+  node.dataset.v = to;
+  const step = (t) => { const k = Math.min(1, (t - t0) / 600), e = 1 - Math.pow(1 - k, 3);
+    node.textContent = Math.round(from + (to - from) * e); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function table(target, headers, rows, onClick) {
+  const t = $(target); t.replaceChildren();
+  const hr = el("tr"); headers.forEach((h) => hr.appendChild(el("th", h))); t.appendChild(hr);
+  if (!rows.length) { const tr = el("tr"); const td = el("td", "nothing here yet", "muted");
+    td.colSpan = headers.length; tr.appendChild(td); t.appendChild(tr); return; }
+  rows.forEach((r) => {
+    const tr = el("tr", undefined, onClick ? "click" : "");
+    r.cells.forEach((c) => tr.appendChild(c instanceof Node ? (() => { const td = el("td"); td.appendChild(c); return td; })() : el("td", c)));
+    if (onClick) tr.addEventListener("click", () => onClick(r));
+    t.appendChild(tr);
+  });
+}
+function flag(ok, yes, no) { return el("span", ok ? yes : no, ok ? "ok" : "bad"); }
+// Remembered on this computer only (localStorage); "Lock" in the header forgets it.
+function token() { try { return localStorage.getItem("operator_token") || ""; } catch (e) { return ""; } }
+function lock(message) { document.body.classList.add("locked"); $("lock").style.display = "block"; $("lock-msg").textContent = message || ""; }
+function unlock() { document.body.classList.remove("locked"); $("lock").style.display = "none"; }
+async function api(path, opts) {
+  const o = Object.assign({}, opts || {});
+  o.headers = Object.assign({}, o.headers || {});
+  if (token()) o.headers["Authorization"] = "Bearer " + token();
+  const res = await fetch(path, o);
+  const body = await res.json().catch(() => ({}));
+  if (res.status === 401) { const e = new Error(token() ? "that token was not accepted - copy it again" : ""); e.locked = true; throw e; }
+  if (!res.ok && res.status !== 409 && res.status !== 202) {
+    const err = body.error || {}, fields = ((err.details || {}).errors || []).map((x) => (x.loc || []).slice(-1)[0]).filter(Boolean);
+    throw new Error(err.code === "request_validation_error" && fields.length ? `please fill in: ${[...new Set(fields)].join(", ")}` : (err.message || res.statusText));
+  }
+  return { status: res.status, body };
+}
+const WRITE = { "Content-Type": "application/json", "X-Dashboard-Request": "1" };
+
+async function loadOverview() {
+  const { body } = await api("/api/v1/dashboard/overview");
+  $("backend").textContent = "updated " + when(body.generated_at);
+  const p = $("pipeline");
+  const CARDS = { discovered: ["Discovered", "company names found", ""], verified: ["Website verified", "official site confirmed", ""],
+    qualified: ["Qualified", "passed every rule", "good"], review: ["Needs review", "a human decides", "wait"],
+    not_qualified: ["Not qualified", "outside the rules", ""], enriched: ["With verified contact", "founder email checked", "good"],
+    analyzed: ["AI analysed", "offer + outreach hook", "good"], exported: ["In Google Sheet", "rows in Ai Leads", "good"] };
+  Object.entries(body.pipeline).forEach(([k, v]) => {
+    let c = p.querySelector(`[data-k="${k}"]`);
+    if (!c) {
+      const [title, hint, tone] = CARDS[k] || [k.replace(/_/g, " "), "", ""];
+      c = el("div", undefined, "card " + tone); c.dataset.k = k;
+      c.appendChild(el("b", "0")); c.appendChild(el("span", title)); c.appendChild(el("small", hint)); p.appendChild(c);
+    }
+    countUp(c.querySelector("b"), v);
+  });
+  const f = body.pipeline;
+  $("funnel").textContent = `Why the sheet is smaller than "Discovered": a search returns many names (${f.discovered}); most are not real companies, are too big, or have no confirmable website (${f.verified} confirmed). Of those, only companies with a small recent round or clear buying signals pass the rules (${f.qualified} qualified). The Google Sheet holds the qualified leads plus the review cases whose basic rules pass.`;
+  table("providers", ["provider", "mode", "configured", "operational", "detail"],
+    body.providers.map((s) => ({ cells: [s.provider, s.mode, flag(s.configured, "yes", "no"), flag(s.operational, "yes", "no"), s.detail || ""] })));
+  table("usage", ["provider", "metric", "all time", "this month", "basis"],
+    body.usage.map((u) => ({ cells: [u.provider, u.metric, u.all_time, u.this_month, u.basis] })));
+  const pr = body.pipeline_runs || { runs: [] };
+  $("p-mode").textContent = pr.available ? `process mode: ${pr.mode}; scheduler every ${pr.schedule_interval_minutes || "-"} min` : "not available";
+  $("p-live").disabled = !pr.writes_allowed;
+  state.live = !!pr.writes_allowed;
+  $("run-off").style.display = state.live ? "none" : "block";
+  $("run-mode").textContent = state.live ? "real searches, real credits" : "safe mode: Run is off";
+  const chip = $("mode-chip"); chip.textContent = state.live ? "LIVE" : "SAFE"; chip.className = "chip " + (state.live ? "live" : "safe");
+  const busy = pr.runs.find((r) => r.status === "running" && !r.dry_run);
+  if (busy && !runTimer) watchRun(busy.run_id);  // a page reload (or a teammate's page) picks the run up
+  table("p-runs", ["started", "trigger", "by", "mode", "dry run", "status", "stage", "est. cost $", "error"],
+    pr.runs.map((r) => ({ run: r, cells: [when(r.started_at), r.trigger, r.requested_by || "", r.mode, r.dry_run ? "yes" : "NO",
+      el("span", r.status, r.status === "succeeded" ? "ok" : (r.status === "running" ? "warn" : "bad")),
+      r.current_stage || (r.stages.length ? r.stages[r.stages.length - 1].stage : ""), r.estimated_cost_usd, r.error_code || ""] })),
+    (row) => { const d = $("p-detail"); d.style.display = "block";
+      d.textContent = (row.run.owner ? `owner: ${row.run.owner}\n` : "") + (row.run.prompt ? `prompt:\n${row.run.prompt}\n\n` : "") + row.run.stages.map((s) => `${s.stage.padEnd(14)} ${s.status.padEnd(10)} ${String(s.duration_ms).padStart(6)} ms  ${JSON.stringify(s.counts)}${s.detail ? "  - " + s.detail : ""}${s.error_code ? "  ERROR " + s.error_code + ": " + (s.error_message || "") : ""}`).join("\n") || "no stage finished yet"; });
+  table("exports", ["started", "mode", "status", "ins", "upd", "same", "withdrawn", "failed", "error"],
+    body.exports.map((r) => ({ cells: [when(r.started_at), r.mode, r.status, r.inserted, r.updated, r.unchanged, r.withdrawn, r.failed, r.error_code || ""] })));
+}
+function kv(id, pairs) {
+  const t = el("table", undefined, "kv");
+  pairs.forEach(([k, v]) => {
+    const tr = el("tr"); tr.appendChild(el("th", k));
+    const td = el("td"), text = v == null || v === "" ? "—" : String(v);
+    if (/^https?:\/\//i.test(text)) { const a = el("a", text); a.href = text; a.target = "_blank"; a.rel = "noopener noreferrer"; td.appendChild(a); }
+    else { td.textContent = text; if (text === "—") td.className = "muted"; }
+    tr.appendChild(td); t.appendChild(tr);
+  });
+  $(id).replaceChildren(t);
+}
+const TONE = { qualified: "good", ready: "good", review: "wait", needs_review: "wait", awaiting_contact: "wait", awaiting_analysis: "wait" };
+const LABEL = { not_qualified: "not qualified", needs_review: "needs review", awaiting_contact: "waiting for contact", awaiting_analysis: "waiting for AI analysis", ready: "complete lead" };
+function pill(v) { return el("span", LABEL[v] || v, "pill " + (TONE[v] || "off")); }
+function leadRows(items) {
+  return items.map((l) => ({ id: l.company_id, cells: [l.company_name, l.domain || "—", pill(l.decision), pill(l.export_status),
+    l.owner || "—", l.contact === "none" ? "—" : l.contact, l.recommended_offer || "—", (l.reasons || [])[0] || ""] }));
+}
+const LEAD_HEAD = ["company", "website", "decision", "lead status", "owner", "decision-maker", "recommended offer", "main reason"];
+async function loadQueue() {
+  const { body } = await api(`/api/v1/review-queue?limit=${PAGE}&offset=${state.queue}`);
+  table("queue", LEAD_HEAD, leadRows(body.items), (r) => openDetail(r.id));
+  $("queue-page").textContent = `rows ${state.queue + 1}–${state.queue + body.items.length}`;
+}
+async function loadLeads() {
+  const f = $("filter").value;
+  const { body } = await api(`/api/v1/leads?limit=${PAGE}&offset=${state.leads}` + (f ? `&decision=${f}` : ""));
+  table("leads", LEAD_HEAD, leadRows(body.items), (r) => openDetail(r.id));
+  $("leads-page").textContent = `rows ${state.leads + 1}–${state.leads + body.items.length}`;
+}
+
+async function openDetail(id, smooth = true) {
+  const { body } = await api(`/api/v1/leads/${encodeURIComponent(id)}`);
+  state.current = body;
+  $("detail").style.display = "block";
+  $("d-title").textContent = body.summary.company_name + " — " + body.summary.decision;
+  $("d-trace").textContent = JSON.stringify(body.trace, null, 2);
+  const q = body.qualification, qd = $("d-qual"); qd.replaceChildren();
+  qd.appendChild(el("div", `path ${q.path} · hard rules ${q.hard_rules_passed ? "passed" : "NOT passed"} · ${q.policy_version} · ${when(q.decided_at)}`, "muted"));
+  const ul = el("ul"); (q.hard_rules || []).forEach((r) => ul.appendChild(el("li", `${r.rule}: ${r.outcome} — ${r.reason}`))); qd.appendChild(ul);
+  const rs = el("ul"); (q.reasons || []).forEach((r) => rs.appendChild(el("li", r))); qd.appendChild(el("b", "Reasons")); qd.appendChild(rs);
+  table("d-events", ["date", "headline", "publishers", "sources"], (q.events || []).map((e) => {
+    const s = el("div"); (e.sources || []).slice(0, 3).forEach((u, i) => { const safe = /^https?:\/\//i.test(u); const a = el(safe ? "a" : "span", safe ? `source ${i + 1}` : u); if (safe) { a.href = u; a.title = u; a.target = "_blank"; a.rel = "noopener noreferrer"; } s.appendChild(a); s.appendChild(el("br")); });
+    return { cells: [e.date || "", e.headline || "", e.publishers || 0, s] };
+  }));
+  const co = body.company || {}, fu = co.funding || {};
+  kv("d-company", [["location", co.location], ["industry", co.industry], ["company LinkedIn", co.company_linkedin_url],
+    ["funding amount", fu.amount], ["funding round", fu.round], ["funding date", fu.date]]);
+  kv("d-prov", Object.entries(co.field_provenance || {}).map(([k, v]) => [k.replace(/_/g, " "), v]));
+  const ct = body.contact;
+  if (ct) kv("d-contact", [["name", ct.name], ["title", ct.title], ["status", ct.status], ["work email", ct.email],
+    ["email check", ct.email_verification], ["phone", ct.phone], ["phone status", ct.phone_status],
+    ["LinkedIn", ct.linkedin_url], ["found by", ct.provider], ["named on", (ct.sources || []).join(", ")]]);
+  else $("d-contact").replaceChildren(el("div", "no contact yet (" + body.summary.contact + ")", "muted"));
+  const ad = $("d-analysis"); ad.replaceChildren();
+  if (body.analysis) {
+    const a = body.analysis, o = a.output || {};
+    ad.appendChild(el("div", `offer: ${a.offer.name || a.offer.id} · trigger ${a.primary_trigger} · confidence ${a.confidence}`));
+    [["Facts", o.observed_facts, "statement"], ["Hypotheses", o.pain_hypotheses, "statement"], ["Opportunities", o.ai_opportunities, "description"]].forEach(([label, items, key]) => {
+      ad.appendChild(el("b", label)); const l = el("ul");
+      (items || []).forEach((i) => l.appendChild(el("li", `${i[key]}  [${(i.evidence_ids || []).join(", ")}]`))); ad.appendChild(l);
+    });
+    ad.appendChild(el("div", "Why this offer: " + (o.offer_match_reason || "")));
+    ad.appendChild(el("div", "Hook: " + (o.outreach_hook || "")));
+  } else { ad.appendChild(el("div", "no accepted analysis (" + body.latest_analysis_state + ")", "muted")); }
+  $("d-export").textContent = body.export ? JSON.stringify(body.export, null, 2) : "never exported to the live Sheet";
+  table("d-history", ["decided", "decision", "path", "first reason"], body.decision_history.map((h) => ({ cells: [when(h.decided_at), h.decision, h.path, h.reason] })));
+  table("d-reviews", ["when", "action", "outcome", "reviewer", "reason", "refusal"], body.reviews.map((r) => ({ cells: [when(r.reviewed_at), r.action, r.outcome, r.reviewer, r.reason, r.refusal_code || ""] })));
+  if (smooth) $("r-result").textContent = "";
+  $("detail").scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
+}
+
+const REFUSAL = {
+  hard_rules_failed: "cannot approve: the basic rules (India, round up to Rs 5 Cr in 90 days or buying signals, news really about this company) do not pass - reject it instead, or wait for new evidence",
+  stale_decision: "this lead was decided again meanwhile - the page is reloaded, check it and submit again",
+  not_allowed_from_qualified: "it is already qualified - only reject or reopen are possible",
+  not_allowed_from_not_qualified: "it is already not qualified - use reopen first",
+  not_allowed_from_review: "this action is not possible for a lead in review",
+};
+async function submitReview() {
+  const cur = state.current; if (!cur) return;
+  const out = $("r-result"), reason = $("r-reason").value.trim(), reviewer = $("r-reviewer").value.trim();
+  if (reason.length < 3) { out.className = "bad"; out.textContent = "write a reason (at least 3 characters) first"; $("r-reason").focus(); return; }
+  if (!reviewer) { out.className = "bad"; out.textContent = "write your name first"; $("r-reviewer").focus(); return; }
+  try { localStorage.setItem("reviewer", reviewer); } catch (e) { /* ignore */ }
+  const payload = { action: $("r-action").value, reviewer, reason, expected_decision_id: cur.trace.qualification_id };
+  $("r-submit").disabled = true; out.className = "muted"; out.textContent = "saving ...";
+  try {
+    const { status, body } = await api(`/api/v1/review/${encodeURIComponent(cur.trace.company_id)}`, {
+      method: "POST", headers: WRITE, body: JSON.stringify(payload) });
+    await Promise.all([loadOverview(), loadQueue(), loadLeads()]);
+    await openDetail(cur.trace.company_id, false);
+    if (status === 200) { out.className = "ok"; out.textContent = `done → now ${LABEL[body.new_decision.decision] || body.new_decision.decision}`; $("r-reason").value = ""; }
+    else { out.className = "warn"; out.textContent = REFUSAL[body.refusal_code] || `refused: ${body.refusal_code}`; }
+  } catch (e) { out.className = "bad"; out.textContent = e.message; }
+  finally { $("r-submit").disabled = false; }
+}
+try { $("r-reviewer").value = localStorage.getItem("reviewer") || ""; } catch (e) { /* ignore */ }
+
+document.querySelectorAll("button[data-page]").forEach((b) => b.addEventListener("click", () => {
+  const k = b.dataset.page; state[k] = Math.max(0, state[k] + PAGE * Number(b.dataset.dir));
+  (k === "queue" ? loadQueue : loadLeads)();
+}));
+$("filter").addEventListener("change", () => { state.leads = 0; loadLeads(); });
+$("d-close").addEventListener("click", () => { $("detail").style.display = "none"; });
+$("r-submit").addEventListener("click", submitReview);
+async function pipelineAction(path, payload, done) {
+  const out = $("p-result");
+  try {
+    const { status, body } = await api(path, { method: "POST", headers: WRITE, body: JSON.stringify(payload || {}) });
+    out.className = status === 409 ? "warn" : "ok";
+    out.textContent = status === 409 ? ((body.error && body.error.message) || "refused") : done(body);
+    await loadOverview();
+    setTimeout(() => loadOverview().catch(() => {}), 2500);
+  } catch (e) { out.className = "bad"; out.textContent = e.message; }
+}
+function startRun(dry) {
+  const name = $("p-name").value.trim();
+  if (!name) { $("p-result").className = "bad"; $("p-result").textContent = "enter your name first"; return; }
+  if (!dry && !window.confirm("Start a LIVE pipeline run? Stages may spend provider credits within their budgets.")) return;
+  pipelineAction("/api/v1/pipeline/runs", { dry_run: dry, requested_by: name }, (b) => `started ${b.run_id.slice(0, 8)} (${b.dry_run ? "dry run" : "LIVE"})`);
+}
+$("p-dry").addEventListener("click", () => startRun(true));
+$("p-live").addEventListener("click", () => startRun(false));
+$("p-recover").addEventListener("click", () => pipelineAction("/api/v1/pipeline/recover", {}, (b) => `${b.recovered.length} stale run(s) closed`));
+async function loadOwners() {
+  const { body } = await api("/api/v1/owners");
+  const sel = $("run-owner"), keep = sel.value || (function () { try { return localStorage.getItem("run_owner") || ""; } catch (e) { return ""; } })();
+  sel.replaceChildren();
+  (body.owners || []).forEach((name) => { const o = el("option", name); o.value = name; sel.appendChild(o); });
+  if (keep) sel.value = keep;
+}
+
+// ---- credits
+const UNIT = { USD: "$", credits: "credits", searches: "searches", verifications: "checks" };
+function amount(value, unit) { return value == null ? "—" : (unit === "USD" ? "$" + value : value); }
+function creditTile(c, spent) {  // one provider counter; ``spent`` = what a single run used (run panel)
+  const tile = el("div", undefined, "tile" + (state.flash ? " flash" : ""));
+  const name = el("div", undefined, "name"); name.appendChild(el("span", c.provider + (c.unit === "USD" ? "" : " · " + (UNIT[c.unit] || c.unit))));
+  name.appendChild(el("span", c.source === "provider" ? "live" : "app records")); tile.appendChild(name);
+  const big = el("div", undefined, "big");
+  if (spent !== undefined) { big.appendChild(el("span", spent == null ? "—" : amount(spent, c.unit), "spent")); big.appendChild(el("small", " used by this run")); }
+  else { big.appendChild(document.createTextNode(amount(c.remaining, c.unit))); big.appendChild(el("small", c.remaining == null ? " left (needs live mode)" : " left")); }
+  tile.appendChild(big);
+  tile.appendChild(el("div", spent !== undefined ? (c.remaining == null ? "balance not readable" : `${amount(c.remaining, c.unit)} left of ${amount(c.limit, c.unit)}`) : (c.limit == null ? `${amount(c.used, c.unit)} used this month` : `${amount(c.used, c.unit)} used of ${amount(c.limit, c.unit)}`), "line"));
+  const left = Number(c.remaining), cap = Number(c.limit);
+  if (c.remaining != null && cap > 0) {
+    const bar = el("div", undefined, "bar"), fill = el("i"), pct = Math.max(0, Math.min(100, 100 * left / cap));
+    fill.className = pct < 15 ? "low" : (pct < 40 ? "mid" : ""); bar.appendChild(fill); tile.appendChild(bar);
+    requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = pct + "%"; }));
+  }
+  if (spent === undefined && c.resets_on) {
+    const r = el("div", undefined, "reset"); r.appendChild(document.createTextNode("New credits: "));
+    r.appendChild(el("b", day(c.resets_on))); r.appendChild(document.createTextNode(" · " + inDays(c.resets_on))); tile.appendChild(r);
+  }
+  if (spent === undefined && (c.keys || []).length > 1) {  // one line per key (never the key itself)
+    const ul = el("ul", undefined, "keys");
+    c.keys.forEach((k) => {
+      const li = el("li"); li.appendChild(el("span", `key ${k.position}${k.position === 1 ? " (first)" : ""}`));
+      const bad = k.status === "refused" || k.status === "not readable" || k.status === "used up";
+      li.appendChild(el("span", bad ? k.status : `${amount(k.used, c.unit)} / ${amount(k.limit, c.unit)}` + (k.resets_on ? ` · ${day(k.resets_on)}` : ""), bad ? "bad" : ""));
+      ul.appendChild(li);
+    });
+    tile.appendChild(ul);
+  }
+  if (c.note && spent === undefined) tile.title = c.note;
+  return tile;
+}
+function day(iso) { const d = new Date(iso + "T00:00:00"); return isNaN(d) ? iso : d.toLocaleDateString([], { day: "numeric", month: "short" }); }
+function inDays(iso) {
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  const n = Math.round((new Date(iso + "T00:00:00") - t) / 86400000);
+  return n <= 0 ? "today" : (n === 1 ? "tomorrow" : `in ${n} days`);
+}
+function creditCalendar(lines) {  // reset dates of every provider and key -> month grids + list
+  const events = {};
+  lines.forEach((c) => {
+    const label = c.provider + (c.unit === "USD" || c.unit === "credits" ? "" : " " + c.unit);
+    const keyed = (c.keys || []).filter((k) => k.resets_on);
+    const dates = keyed.length ? keyed.map((k) => [k.resets_on, keyed.length > 1 ? `${label} key ${k.position}` : label]) : (c.resets_on ? [[c.resets_on, label + (c.source === "app" ? " (app budget)" : "")]] : []);
+    dates.forEach(([d, what]) => { (events[d] = events[d] || []); if (!events[d].includes(what)) events[d].push(what); });
+  });
+  const months = $("cal-months"); months.replaceChildren();
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  [0, 1].forEach((offset) => {
+    const first = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    months.appendChild(el("h4", first.toLocaleDateString([], { month: "long", year: "numeric" })));
+    const grid = el("div", undefined, "cal-grid");
+    ["M", "T", "W", "T", "F", "S", "S"].forEach((d) => grid.appendChild(el("div", d, "dow")));
+    for (let i = 0; i < (first.getDay() + 6) % 7; i++) grid.appendChild(el("div"));
+    const last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+    for (let d = 1; d <= last; d++) {
+      const date = new Date(first.getFullYear(), first.getMonth(), d);
+      const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      const cell = el("div", d, "d" + (events[iso] ? " reset" : "") + (date.getTime() === now.getTime() ? " today" : ""));
+      if (events[iso]) cell.title = "New credits: " + events[iso].join(", ");
+      grid.appendChild(cell);
+    }
+    months.appendChild(grid);
+  });
+  const list = $("cal-list"); list.replaceChildren();
+  const upcoming = Object.keys(events).sort().filter((d) => new Date(d + "T00:00:00") >= now);
+  if (!upcoming.length) list.appendChild(el("li", "Reset dates appear in live mode (read from each provider).", "muted"));
+  upcoming.forEach((d, i) => {
+    const li = el("li"); li.style.animationDelay = (i * 60) + "ms";
+    const left = el("div"); left.appendChild(el("div", day(d), "date")); left.appendChild(el("div", inDays(d), "in"));
+    li.appendChild(left); li.appendChild(el("div", events[d].join(" · "))); list.appendChild(li);
+  });
+}
+async function loadCredits() {
+  const { body } = await api("/api/v1/credits");
+  $("credits-when").textContent = (body.live ? "read live from each provider · " : "app records only (safe mode) · ") + when(body.generated_at);
+  $("credits").replaceChildren(...body.lines.map((c) => creditTile(c)));
+  creditCalendar(body.lines);
+  state.flash = false;
+  const sp = (r, key) => (r.spent || {})[key];
+  table("credit-runs", ["run", "owner", "checked", "stopped free", "scraped", "qualified", "firecrawl", "apify", "hunter", "saved (est.)"],
+    (body.runs || []).map((r) => {
+      const hunter = [sp(r, "hunter searches"), sp(r, "hunter verifications")];
+      return { cells: [when(r.started_at), r.owner || "—", r.screened, r.stopped_before_scraping, r.scraped, r.qualified,
+        (sp(r, "firecrawl credits") ?? r.website_credits) + " cr", sp(r, "apify USD") != null ? "$" + sp(r, "apify USD") : "—",
+        hunter[0] != null || hunter[1] != null ? `${hunter[0] ?? 0} search · ${hunter[1] ?? 0} check` : "—", r.credits_saved_estimate + " cr"] };
+    }));
+  const g = body.screening || {};
+  $("screening").textContent = g.screened
+    ? `The free pre-screen checked ${g.screened} companies before any scraping and stopped ${g.skipped} of them. One scraped company costs about ${g.avg_credits_per_scraped_company} Firecrawl credits, so roughly ${g.estimated_credits_saved} credits were not spent.`
+    : "Pre-screen figures appear after the first run.";
+}
+
+// ---- run
+let runTimer = null;
+const STEPS = [["discovery", "Search"], ["prescreen", "Free check"], ["website", "Website"], ["signals", "News"],
+  ["qualification", "Rules"], ["enrichment", "Contact"], ["analysis", "AI analysis"], ["export", "Sheet"]];
+function runSummary(run) {
+  const c = {}; run.stages.forEach((s) => { c[s.stage] = s.counts || {}; });
+  const n = (stage, key) => Number((c[stage] || {})[key] || 0);
+  const lines = [];
+  if (run.target_leads) lines.push(["Leads", `${run.leads_found || 0} of ${run.target_leads} wanted · ${run.round || 1} search round(s)` + (run.stop_reason ? ` · stopped because ${run.stop_reason}` : "")]);
+  lines.push(
+    ["Search", `${n("discovery", "new_companies")} new company name(s) found`],
+    ["Free check", `${n("prescreen", "companies")} looked at · ${n("prescreen", "skip")} stopped (0 credits) · ${n("prescreen", "scrape")} allowed`],
+    ["Website", `${n("website", "companies")} scraped · official site confirmed for ${n("website", "verified")}`],
+    ["Rules", `${n("qualification", "qualified")} qualified · ${n("qualification", "review")} need review · ${n("qualification", "not_qualified")} not qualified`],
+    ["Google Sheet", `${n("export", "inserted")} new row(s) in "Ai Leads" · ${n("export", "updated")} updated · ${n("export", "leads")} leads in total`],
+  );
+  const failed = run.stages.filter((s) => s.status === "failed");
+  failed.forEach((s) => lines.push([`Step "${s.stage}" failed`, `${s.error_code || ""} ${s.error_message || ""}`]));
+  if (!n("export", "inserted") && !failed.length) lines.push(["No new lead this run", "none of the companies found passed the rules (India, round up to ₹5 Cr in the last 90 days or clear buying signals, confirmed official website). Run again for the next searches, or open the Review queue: companies there wait for your decision."]);
+  return lines;
+}
+function showRun(run) {
+  const st = {}; run.stages.forEach((s) => { st[s.stage] = s.status; });
+  const running = run.status === "running", box = $("run-progress");
+  box.style.display = "block"; box.classList.toggle("working", running);
+  $("run-go").disabled = running;
+  const rounds = run.target_leads ? ` · round ${run.round || 1} of up to ${run.max_rounds || 1} · ${run.leads_found || 0} of ${run.target_leads} leads so far` : "";
+  $("run-title").textContent = running ? `Run for ${run.owner || run.requested_by || "?"} is working${rounds} - please wait`
+    : (run.status === "succeeded" ? `Run finished · ${when(run.finished_at)}` : `Run ${run.status}: ${run.error_code || ""} ${run.error_message || ""}`);
+  const steps = $("run-steps"); steps.replaceChildren();
+  STEPS.forEach(([key, label]) => {
+    const now = running && run.current_stage === key;
+    steps.appendChild(el("span", label + (st[key] === "skipped" ? " · nothing to do" : ""), now ? "now" : (st[key] === "failed" ? "fail" : (st[key] ? "done" : ""))));
+  });
+  const sum = $("run-summary"); sum.replaceChildren();
+  if (!running) runSummary(run).forEach(([head, text], i) => { const li = el("li"); li.style.animationDelay = (i * 70) + "ms"; li.appendChild(el("b", head + "  ")); li.appendChild(document.createTextNode(text)); sum.appendChild(li); });
+  const queries = run.queries || [];
+  $("run-queries-wrap").style.display = queries.length ? "block" : "none";
+  $("run-queries").textContent = queries.join(String.fromCharCode(10));
+  const credits = run.credits || [], wrap = $("run-credits-wrap");
+  wrap.style.display = running || run.dry_run ? "none" : "block";
+  if (!running) {
+    $("run-credits-note").textContent = credits.length ? "provider counters before vs after the run (Apify can lag a minute)" : "not recorded for this run";
+    $("run-credits").replaceChildren(...credits.map((c) => creditTile(c, c.spent)));
+  }
+}
+async function watchRun(id) {
+  clearTimeout(runTimer); runTimer = null;
+  const out = $("run-result");
+  try {
+    const { body } = await api(`/api/v1/pipeline/runs/${id}`);
+    showRun(body);
+    if (body.status === "running") { out.className = "muted"; out.textContent = `step: ${body.current_stage || "starting"} …`; runTimer = setTimeout(() => watchRun(id), 5000); return; }
+    out.className = body.status === "succeeded" ? "ok" : "bad";
+    out.textContent = body.status === "succeeded" ? "finished - result below" : `${body.status}`;
+    state.flash = true;  // the credit tiles flash once with the fresh numbers
+    loadAll().catch(() => {});
+  } catch (e) { out.className = "warn"; out.textContent = "connection lost - retrying …"; runTimer = setTimeout(() => watchRun(id), 8000); }
+}
+async function runFinder() {
+  const owner = $("run-owner").value, prompt = $("run-prompt").value.trim(), out = $("run-result");
+  if (!state.live) { out.className = "bad"; out.textContent = "Run is switched off - follow the box above, then click Refresh."; $("run-off").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+  if (!owner && $("run-owner").options.length) { out.className = "bad"; out.textContent = "choose a lead owner"; return; }
+  const limit = Math.max(1, Math.min(25, Number($("run-limit").value) || 25));
+  const target = Math.max(1, Math.min(10, Number($("run-target").value) || 3));
+  if (!window.confirm(`Start a LIVE run${owner ? " for " + owner : ""}? It searches until ${target} new lead(s) are found (several rounds, up to about 45 minutes) and spends provider credits within the budgets.`)) return;
+  try { localStorage.setItem("run_owner", owner); localStorage.setItem("run_prompt", prompt); } catch (e) { /* ignore */ }
+  try {
+    const { status, body } = await api("/api/v1/pipeline/runs", { method: "POST", headers: WRITE,
+      body: JSON.stringify({ dry_run: false, requested_by: owner || "dashboard", owner: owner || null, prompt: prompt || null, limit, target_leads: target,
+        stages: ["discovery", "prescreen", "website", "signals", "qualification", "enrichment", "analysis", "export"] }) });
+    if (status === 409) {  // a run is already working (maybe started by a teammate): show it instead of an error
+      const text = (body.error && body.error.message) || body.detail || "refused", busy = /[0-9a-f]{8}-[0-9a-f-]{27}/.exec(text);
+      out.className = "warn"; out.textContent = busy ? "a run is already working - showing it below" : text;
+      if (busy) watchRun(busy[0]);
+      return;
+    }
+    if (status >= 400) { out.className = "bad"; out.textContent = (body.error && body.error.message) || body.detail || `error ${status}`; return; }
+    out.className = "muted"; out.textContent = "started …"; watchRun(body.run_id);
+  } catch (e) { out.className = "bad"; out.textContent = e.message; }
+}
+$("run-go").addEventListener("click", runFinder);
+try { $("run-prompt").value = localStorage.getItem("run_prompt") || ""; } catch (e) { /* ignore */ }
+function loadAll() {
+  loadOwners().catch(() => {}); loadCredits().catch(() => {});
+  return Promise.all([loadOverview(), loadQueue(), loadLeads()]).then(unlock)
+    .catch((e) => { if (e.locked) lock(e.message); else $("backend").textContent = "error: " + e.message; throw e; });
+}
+function saveToken() {
+  const value = $("token").value.trim(); if (!value) { lock("paste the token first"); return; }
+  try { localStorage.setItem("operator_token", value); } catch (e) { /* storage blocked */ }
+  $("token").value = "";
+  loadAll().catch(() => {});
+}
+$("token-save").addEventListener("click", saveToken);
+$("token").addEventListener("keydown", (e) => { if (e.key === "Enter") saveToken(); });
+$("token-forget").addEventListener("click", () => { try { localStorage.removeItem("operator_token"); } catch (e) { /* ignore */ } lock(""); });
+$("refresh").addEventListener("click", () => { loadAll().catch(() => {}); });
+loadAll()
+  .then(() => {  // deep link: /dashboard#lead=<company_id> opens that lead's detail
+    const m = /^#lead=([0-9a-f-]{36})(&focus)?$/i.exec(location.hash);
+    if (m && m[2]) document.body.classList.add("focus");  // &focus = detail panel only
+    if (m) return openDetail(m[1], false);
+  })
+  .catch(() => {});
+</script>
+</body>
+</html>

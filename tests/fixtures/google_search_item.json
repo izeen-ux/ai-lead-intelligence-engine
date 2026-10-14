@@ -1,0 +1,81 @@
+{
+  "searchQuery": {
+    "term": "startup raises seed funding crore India",
+    "url": "http://www.google.com/search?q=startup+raises+seed+funding+crore+India",
+    "device": "DESKTOP",
+    "page": 1,
+    "type": "SEARCH",
+    "domain": "google.com",
+    "countryCode": "IN",
+    "languageCode": null,
+    "locationUule": null
+  },
+  "resultsTotal": 1250000,
+  "hasNextPage": true,
+  "relatedQueries": [],
+  "paidResults": [],
+  "peopleAlsoAsk": [],
+  "organicResults": [
+    {
+      "title": "Acme Robotics raises Rs 3 Cr in seed round led by Alpha Ventures - News Example",
+      "url": "https://news.example/funding/acme-robotics-seed?utm_source=google",
+      "displayedUrl": "https://news.example › funding",
+      "description": "Bengaluru-based Acme Robotics has raised Rs 3 Cr in a seed round.",
+      "date": "2026-09-20T00:00:00Z",
+      "position": 1,
+      "emphasizedKeywords": ["raises", "seed"],
+      "siteLinks": [],
+      "type": "organic"
+    },
+    {
+      "title": "Exclusive: Fintech startup Globex Pay bags $1.2 Mn in pre-Series A funding",
+      "url": "https://daily.example/globex-pay-funding",
+      "displayedUrl": "https://daily.example",
+      "description": "Globex Pay will use the funds to expand its team.",
+      "position": 2,
+      "emphasizedKeywords": [],
+      "siteLinks": [],
+      "type": "organic"
+    },
+    {
+      "title": "Top 10 Indian startups that raised funding this week",
+      "url": "https://news.example/weekly-roundup",
+      "displayedUrl": "https://news.example",
+      "description": "A roundup of funding deals.",
+      "position": 3,
+      "emphasizedKeywords": [],
+      "siteLinks": [],
+      "type": "organic"
+    },
+    {
+      "title": "ACME Robotics Pvt Ltd secures ₹3 crore to scale warehouse automation",
+      "url": "https://other.example/acme-robotics",
+      "displayedUrl": "https://other.example",
+      "description": "The company plans to hire engineers.",
+      "position": 4,
+      "emphasizedKeywords": [],
+      "siteLinks": [],
+      "type": "organic"
+    },
+    {
+      "title": "How to raise a seed round in India",
+      "url": "https://blog.example/how-to-raise",
+      "displayedUrl": "https://blog.example",
+      "description": "Guide.",
+      "position": 5,
+      "emphasizedKeywords": [],
+      "siteLinks": [],
+      "type": "organic"
+    },
+    {
+      "title": "Initech gets new CEO",
+      "url": "https://news.example/initech-ceo",
+      "displayedUrl": "https://news.example",
+      "description": "Leadership change.",
+      "position": 6,
+      "emphasizedKeywords": [],
+      "siteLinks": [],
+      "type": "organic"
+    }
+  ]
+}

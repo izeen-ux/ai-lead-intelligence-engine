@@ -1,0 +1,257 @@
+{
+  "dataset": "qualification-labeled-cases",
+  "version": "2026-09-30.1",
+  "reference_date": "2026-09-30T12:00:00+00:00",
+  "provenance": "SYNTHETIC. Hand-written by the Phase 5 implementer to cover the policy's decision boundaries. Company names, domains and URLs are fictional (.example / invented). NOT production data and NOT a measure of real-world accuracy.",
+  "label_semantics": "label = the decision the documented Phase 5 policy (docs/phases/QUALIFICATION_POLICY.md) should produce when the semantic judge is competent. hard_path = expected deterministic path.",
+  "cases": [
+    {
+      "id": "Q01", "category": "clear_funding", "label": "qualified", "hard_path": "both",
+      "rationale": "Recent attributed Rs 4 crore seed round, under the Rs 5 Cr cap, two publishers; the headline also carries an automation cue, so the intent path passes too.",
+      "company": {"name": "Kheti Labs", "domain": "khetilabs.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Kheti Labs raises Rs 4 crore seed round to automate farm procurement", "platform": "news:Inc42", "days_ago": 12, "confidence": 0.75, "attributed": true},
+        {"source": "a", "type": "ai_interest", "title": "Kheti Labs raises Rs 4 crore seed round to automate farm procurement", "platform": "news:Inc42", "days_ago": 12, "confidence": 0.75, "attributed": true},
+        {"source": "b", "type": "funding", "title": "Agritech startup Kheti Labs secures Rs 4 crore in seed funding", "platform": "news:Entrackr", "days_ago": 11, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q02", "category": "clear_funding", "label": "qualified", "hard_path": "both",
+      "rationale": "Rs 3.5 crore pre-seed plus an attributed AI deployment inside both windows.",
+      "company": {"name": "Parcelwise", "domain": "parcelwise.co.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Parcelwise bags Rs 3.5 crore pre-seed funding led by angel network", "platform": "news:YourStory", "days_ago": 30, "confidence": 0.7, "attributed": true},
+        {"source": "b", "type": "ai_interest", "title": "Parcelwise rolls out AI route optimisation for 40 courier partners", "platform": "news:ET Retail", "days_ago": 8, "confidence": 0.75, "attributed": true},
+        {"source": "b", "type": "expansion", "title": "Parcelwise rolls out AI route optimisation for 40 courier partners", "platform": "news:ET Retail", "days_ago": 8, "confidence": 0.75, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q03", "category": "funding_above_cap", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Rs 45 crore round is 9x the cap; no other intent evidence.",
+      "company": {"name": "Voltra Mobility", "domain": "voltra.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Voltra Mobility raises Rs 45 crore Series A from growth investors", "platform": "news:Entrackr", "days_ago": 20, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q04", "category": "funding_above_cap", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Rs 5.2 crore just above the cap - boundary check.",
+      "company": {"name": "Tiffinly", "domain": "tiffinly.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Tiffinly raises Rs 5.2 crore in seed funding", "platform": "news:Inc42", "days_ago": 5, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q05", "category": "funding_outside_window", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Rs 3 crore round 120 days ago - outside the 90-day window.",
+      "company": {"name": "Loomcraft", "domain": "loomcraft.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Loomcraft raises Rs 3 crore to digitise handloom supply chain", "platform": "news:VCCircle", "days_ago": 120, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q06", "category": "funding_outside_window", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Rs 2 crore round 91 days ago - one day outside the window.",
+      "company": {"name": "Medislot", "domain": "medislot.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Medislot secures Rs 2 crore seed funding", "platform": "news:Entrackr", "days_ago": 91, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q07", "category": "missing_funding_amount", "label": "review", "hard_path": "none",
+      "rationale": "Recent attributed funding without an amount - cannot pass the funding path automatically.",
+      "company": {"name": "Brewbox", "domain": "brewbox.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Brewbox raises seed funding from angel investors", "platform": "news:Inc42", "days_ago": 14, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q08", "category": "missing_funding_amount", "label": "review", "hard_path": "none",
+      "rationale": "Undisclosed amount; only a cumulative total is mentioned.",
+      "company": {"name": "Skillnest", "domain": "skillnest.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Skillnest raises undisclosed amount, taking its total funding to Rs 12 crore so far", "platform": "news:Entrackr", "days_ago": 25, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q09", "category": "strong_ai_intent", "label": "qualified", "hard_path": "intent",
+      "rationale": "Attributed recent AI deployment at scale plus a customer rollout.",
+      "company": {"name": "Ledgerly", "domain": "ledgerly.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "ai_interest", "title": "Ledgerly deploys AI invoice automation across 200 SME customers", "platform": "news:ET BFSI", "days_ago": 10, "confidence": 0.75, "attributed": true},
+        {"source": "a", "type": "product_customer", "title": "Ledgerly deploys AI invoice automation across 200 SME customers", "platform": "news:ET BFSI", "days_ago": 10, "confidence": 0.75, "attributed": true},
+        {"source": "b", "type": "ai_interest", "title": "Ledgerly launches GenAI assistant for accountants", "platform": "news:Inc42", "days_ago": 40, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q10", "category": "strong_ai_intent", "label": "qualified", "hard_path": "intent",
+      "rationale": "Attributed automation initiative with a large enterprise customer.",
+      "company": {"name": "Freightmind", "domain": "freightmind.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "ai_interest", "title": "Freightmind signs deal to automate dispatch for Tata logistics arm", "platform": "news:ET Auto", "days_ago": 15, "confidence": 0.75, "attributed": true},
+        {"source": "a", "type": "product_customer", "title": "Freightmind signs deal to automate dispatch for Tata logistics arm", "platform": "news:ET Auto", "days_ago": 15, "confidence": 0.75, "attributed": true},
+        {"source": "b", "type": "expansion", "title": "Freightmind expands automation platform to Pune and Chennai", "platform": "news:Autocar Professional", "days_ago": 50, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q11", "category": "strong_expansion", "label": "qualified", "hard_path": "intent",
+      "rationale": "Attributed expansion to new cities and fleet growth within the window.",
+      "company": {"name": "Ecoride Fleet", "domain": "ecoride.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "expansion", "title": "Ecoride Fleet expands to five new cities, adds 300 electric three-wheelers", "platform": "news:ET Auto", "days_ago": 18, "confidence": 0.75, "attributed": true},
+        {"source": "b", "type": "product_customer", "title": "Ecoride Fleet partners with Zomato for last-mile deliveries in Bengaluru", "platform": "news:Inc42", "days_ago": 35, "confidence": 0.75, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q12", "category": "strong_expansion", "label": "qualified", "hard_path": "intent",
+      "rationale": "New plant doubling capacity - operational growth pressure.",
+      "company": {"name": "Pack Innovations", "domain": "packinnovations.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "expansion", "title": "Pack Innovations opens second plant in Gujarat, doubling production capacity", "platform": "news:Business Standard", "days_ago": 22, "confidence": 0.75, "attributed": true},
+        {"source": "b", "type": "hiring", "title": "Pack Innovations to hire 150 for new Gujarat plant expansion", "platform": "news:ET HR", "days_ago": 20, "confidence": 0.7, "attributed": true},
+        {"source": "b", "type": "expansion", "title": "Pack Innovations to hire 150 for new Gujarat plant expansion", "platform": "news:ET HR", "days_ago": 20, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q13", "category": "weak_generic_news", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Hiring-only post; a job opening alone is not growth evidence.",
+      "company": {"name": "Craftbay", "domain": "craftbay.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "hiring", "title": "Craftbay is hiring a marketing intern", "platform": "news:Jobs Digest", "days_ago": 6, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q14", "category": "weak_generic_news", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Generic listicle mention, name-only match, low confidence.",
+      "company": {"name": "Zestify", "domain": "zestify.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "expansion", "title": "10 startups to watch: Zestify among launches at weekend meetup", "platform": "news:Blog Roundup", "days_ago": 9, "confidence": 0.55, "attributed": false}
+      ]
+    },
+    {
+      "id": "Q15", "category": "irrelevant_mention", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Mention of the word in an unrelated market report; not attributable.",
+      "company": {"name": "Nova", "domain": "novasoft.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "expansion", "title": "Nova index expands as markets rally on rate cut hopes", "platform": "news:Markets Today", "days_ago": 4, "confidence": 0.55, "attributed": false}
+      ]
+    },
+    {
+      "id": "Q16", "category": "irrelevant_mention", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Sports article that happens to contain the company name.",
+      "company": {"name": "Striker", "domain": "strikerhq.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "hiring", "title": "Striker signs new coach ahead of league season", "platform": "news:Sports Daily", "days_ago": 3, "confidence": 0.55, "attributed": false},
+        {"source": "a", "type": "product_customer", "title": "Striker signs new coach ahead of league season", "platform": "news:Sports Daily", "days_ago": 3, "confidence": 0.55, "attributed": false}
+      ]
+    },
+    {
+      "id": "Q17", "category": "namesake_noisy", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Namesake video game news; nothing attributable to the company.",
+      "company": {"name": "Apex", "domain": "apexlogistics.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "expansion", "title": "Apex Legends launches new season with ranked changes", "platform": "youtube:GameSpot", "days_ago": 7, "confidence": 0.45, "attributed": false},
+        {"source": "b", "type": "ai_interest", "title": "Apex Legends AI bots explained", "platform": "youtube:Gaming Clips", "days_ago": 12, "confidence": 0.45, "attributed": false}
+      ]
+    },
+    {
+      "id": "Q18", "category": "namesake_noisy", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Irrelevant YouTube result for a name query (the Phase 4 'Drivn drivn' pattern).",
+      "company": {"name": "Drivo", "domain": "drivo.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "hiring", "title": "Drivo driving licence apply online full process", "platform": "youtube:Sarkari Help", "days_ago": 5, "confidence": 0.4, "attributed": false}
+      ]
+    },
+    {
+      "id": "Q19", "category": "duplicate_coverage", "label": "qualified", "hard_path": "funding",
+      "rationale": "One Rs 4.5 crore round covered by four publishers - must count as ONE event.",
+      "expected_events": 1,
+      "company": {"name": "Quikcart", "domain": "quikcart.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Quikcart raises Rs 4.5 crore seed round led by Blume", "platform": "news:Inc42", "days_ago": 10, "confidence": 0.7, "attributed": true},
+        {"source": "b", "type": "funding", "title": "Quick commerce startup Quikcart bags Rs 4.5 crore", "platform": "news:Entrackr", "days_ago": 10, "confidence": 0.7, "attributed": true},
+        {"source": "c", "type": "funding", "title": "Quikcart secures Rs 4.5 Cr in seed funding", "platform": "news:YourStory", "days_ago": 9, "confidence": 0.7, "attributed": true},
+        {"source": "d", "type": "funding", "title": "Blume backs Quikcart with Rs 4.5 crore", "platform": "news:VCCircle", "days_ago": 11, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q20", "category": "duplicate_coverage", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Rs 45 crore round (above cap) covered four times: still one event, still above cap.",
+      "expected_events": 1,
+      "company": {"name": "Gridlink", "domain": "gridlink.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Gridlink raises Rs 45 crore from Avaana Capital", "platform": "news:Entrackr", "days_ago": 12, "confidence": 0.7, "attributed": true},
+        {"source": "b", "type": "funding", "title": "Gridlink Raises Rs 45 Crore, Seed Shares Priced At Rs 132.40 Apiece", "platform": "news:Indian Startup News", "days_ago": 12, "confidence": 0.7, "attributed": true},
+        {"source": "c", "type": "funding", "title": "EV infra startup Gridlink secures Rs 45 Cr", "platform": "news:CXO Digitalpulse", "days_ago": 13, "confidence": 0.7, "attributed": true},
+        {"source": "d", "type": "funding", "title": "Avaana Capital leads Rs 45 crore round in Gridlink", "platform": "news:ET Auto", "days_ago": 11, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q21", "category": "conflicting_evidence", "label": "review", "hard_path": "none",
+      "rationale": "Same round reported as Rs 4 crore and Rs 40 crore - conflicting amounts.",
+      "company": {"name": "Carebridge", "domain": "carebridge.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Carebridge raises Rs 4 crore seed round for elder care", "platform": "news:Inc42", "days_ago": 15, "confidence": 0.7, "attributed": true},
+        {"source": "b", "type": "funding", "title": "Carebridge raises Rs 40 crore seed round for elder care", "platform": "news:Blog Roundup", "days_ago": 15, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q22", "category": "conflicting_evidence", "label": "review", "hard_path": "none",
+      "rationale": "A Rs 3 crore round and a separate Rs 50 crore round inside the window.",
+      "company": {"name": "Solarcity Grid", "domain": "solarcitygrid.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Solarcity Grid raises Rs 3 crore angel round", "platform": "news:Entrackr", "days_ago": 80, "confidence": 0.7, "attributed": true},
+        {"source": "b", "type": "funding", "title": "Solarcity Grid closes Rs 50 crore Series A led by climate fund", "platform": "news:ET Energy", "days_ago": 10, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q23", "category": "insufficient_evidence", "label": "not_qualified", "hard_path": "none",
+      "rationale": "Verified company with no signals at all - no qualification path.",
+      "company": {"name": "Quietworks", "domain": "quietworks.in", "domain_status": "verified"},
+      "signals": []
+    },
+    {
+      "id": "Q24", "category": "insufficient_evidence", "label": "review", "hard_path": "none",
+      "rationale": "Funding with an amount under the cap but no publication date.",
+      "company": {"name": "Farmgate", "domain": "farmgate.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Farmgate raises Rs 2 crore from angel investors", "platform": "news:Unknown Blog", "days_ago": null, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q25", "category": "ambiguous_review", "label": "review", "hard_path": "intent",
+      "rationale": "Drivn-like: strong expansion/customer intent but a recent Rs 45 crore round above the cap (ICP_OVER_CAP_FUNDING_POLICY=review).",
+      "company": {"name": "Drivnly", "domain": "drivnly.co.in", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Drivnly raises Rs 45 crore from Avaana Capital", "platform": "news:Entrackr", "days_ago": 40, "confidence": 0.7, "attributed": true},
+        {"source": "b", "type": "expansion", "title": "Tata Motors and Drivnly partner to deploy over 1,000 electric trucks in India", "platform": "news:ET Auto", "days_ago": 20, "confidence": 0.75, "attributed": true},
+        {"source": "b", "type": "product_customer", "title": "Tata Motors and Drivnly partner to deploy over 1,000 electric trucks in India", "platform": "news:ET Auto", "days_ago": 20, "confidence": 0.75, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q26", "category": "ambiguous_review", "label": "review", "hard_path": "intent",
+      "rationale": "Strong attributed intent but geography cannot be confirmed (.com domain, no country evidence).",
+      "company": {"name": "Orbitly", "domain": "orbitly.com", "domain_status": "verified"},
+      "signals": [
+        {"source": "a", "type": "ai_interest", "title": "Orbitly launches AI scheduling for clinics across 30 locations", "platform": "news:TechWire", "days_ago": 14, "confidence": 0.75, "attributed": true},
+        {"source": "a", "type": "expansion", "title": "Orbitly launches AI scheduling for clinics across 30 locations", "platform": "news:TechWire", "days_ago": 14, "confidence": 0.75, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q27", "category": "identity_geography", "label": "not_qualified", "hard_path": "funding",
+      "rationale": "Perfect funding evidence but the company identity is NOT verified - never QUALIFIED.",
+      "company": {"name": "Unverio", "domain": null, "domain_status": "review"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Unverio raises Rs 3 crore seed funding", "platform": "news:Inc42", "days_ago": 10, "confidence": 0.7, "attributed": true}
+      ]
+    },
+    {
+      "id": "Q28", "category": "identity_geography", "label": "not_qualified", "hard_path": "funding",
+      "rationale": "Explicit non-India company (country_code US).",
+      "company": {"name": "Westbay AI", "domain": "westbay.in", "domain_status": "verified", "country_code": "US"},
+      "signals": [
+        {"source": "a", "type": "funding", "title": "Westbay AI raises Rs 4 crore seed", "platform": "news:TechCrunch", "days_ago": 10, "confidence": 0.7, "attributed": true}
+      ]
+    }
+  ]
+}

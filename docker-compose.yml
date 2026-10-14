@@ -1,0 +1,143 @@
+# Lead Intelligence Engine - one supported way to start and stop everything.
+#
+#   start:   docker compose up -d --build
+#   status:  docker compose ps
+#   logs:    docker compose logs -f app scheduler
+#   stop:    docker compose down          (data stays in the lead-intel-pgdata volume)
+#
+# Network exposure: ONLY 127.0.0.1 ports are published (app 8000, PostgreSQL 5432 and
+# Crawl4AI 11235 for host tools). Laya and enrichment-kit publish nothing; they are reachable
+# only on the private Compose network. Nothing listens on 0.0.0.0 of the host.
+#
+# Secrets: read at run time from the git-ignored .env (env_file) and the read-only mount of
+# secrets/google. Nothing secret is built into an image.
+#
+# Safe baseline: PROVIDER_MODE=mock, ALLOW_PAID_PROVIDER_CALLS=false, ALLOW_SHEETS_WRITES=false
+# come from .env. To run LIVE, set them in the shell for that one `docker compose up` only.
+
+name: lead-intel
+
+x-app: &app
+  build: .
+  image: lead-intel-app:phase10
+  env_file: .env
+  environment: &app-env
+    APP_ENV: staging                     # operator token becomes mandatory (API refuses anonymous use)
+    LOG_FORMAT: json
+    DATABASE_HOST_OVERRIDE: postgres
+    INTERNAL_SERVICE_HOSTS: laya,enrichment-kit
+    LAYA_ENDPOINT_URL: http://laya:8765
+    # CPU inference: the first evaluation after an idle period can take minutes, and requests
+    # queue behind it. A 30 s timeout turned that into fail-closed REVIEW decisions (seen live
+    # 2026-10-05), so containers wait longer.
+    LAYA_TIMEOUT_SECONDS: "240"
+    ENRICHMENT_KIT_BASE_URL: http://enrichment-kit:8787
+    CRAWL4AI_BASE_URL: http://crawl4ai:11235
+    PROVIDER_MODE: ${PROVIDER_MODE:-mock}
+    ALLOW_PAID_PROVIDER_CALLS: ${ALLOW_PAID_PROVIDER_CALLS:-false}
+    ALLOW_SHEETS_WRITES: ${ALLOW_SHEETS_WRITES:-false}
+  volumes:
+    - ./secrets/google:/app/secrets/google:ro
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop: [ALL]
+  security_opt:
+    - no-new-privileges:true
+  stop_grace_period: 30s
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: lead-intel-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: lead_intel
+      # Only used when the volume is EMPTY (first start). An existing volume keeps its password.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+    ports:
+      - "127.0.0.1:5432:5432"            # host tools only; never 0.0.0.0
+      - "[::1]:5432:5432"                # IPv6 loopback ("localhost" resolves here first)
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d lead_intel"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    stop_grace_period: 60s
+
+  crawl4ai:
+    image: unclecode/crawl4ai:0.9.4
+    container_name: lead-intel-crawl4ai
+    restart: unless-stopped
+    environment:
+      CRAWL4AI_API_TOKEN: ${CRAWL4AI_API_TOKEN:-}
+    ports:
+      - "127.0.0.1:11235:11235"
+    shm_size: 1g
+
+  laya:
+    build:
+      context: .
+      dockerfile: docker/laya.Dockerfile
+    image: lead-intel-laya:0.3.22
+    restart: unless-stopped
+    volumes:
+      - laya-models:/models
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    # no ports: private network only
+
+  enrichment-kit:
+    build:
+      context: sidecars/enrichment-kit
+      dockerfile: ../../docker/enrichment-kit.Dockerfile
+    image: lead-intel-enrichment-kit:phase10
+    restart: unless-stopped
+    environment:
+      HUNTER_API_KEY: ${HUNTER_API_KEY:-}
+      HUNTER_API_KEY_BACKUPS: ${HUNTER_API_KEY_BACKUPS:-}
+      APOLLO_API_KEY: ${APOLLO_API_KEY:-}
+      APOLLO_API_KEY_BACKUPS: ${APOLLO_API_KEY_BACKUPS:-}
+      ENRICHMENT_KIT_API_TOKEN: ${ENRICHMENT_KIT_API_TOKEN:-}
+      ENRICHMENT_KIT_PORT: "8787"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    # no ports: private network only
+
+  migrate:
+    <<: *app
+    command: ["python", "-m", "alembic", "upgrade", "head"]   # forward-only; never resets data
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app:
+    <<: *app
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  scheduler:
+    <<: *app
+    command: ["python", "scripts/run_scheduler.py"]
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:
+    external: true
+    name: lead-intel-pgdata              # the existing data volume - never recreated by Compose
+  laya-models:

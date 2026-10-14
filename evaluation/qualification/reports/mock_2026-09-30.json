@@ -1,0 +1,86 @@
+{
+  "dataset": "qualification-labeled-cases",
+  "version": "2026-09-30.1",
+  "laya_mode": "mock",
+  "cases": 28,
+  "decision_accuracy": 1.0,
+  "hard_path_accuracy": 1.0,
+  "event_count_checks": "2/2",
+  "false_qualified": [],
+  "confusion_label_x_predicted": {
+    "qualified": {
+      "qualified": 7,
+      "review": 0,
+      "not_qualified": 0
+    },
+    "review": {
+      "qualified": 0,
+      "review": 7,
+      "not_qualified": 0
+    },
+    "not_qualified": {
+      "qualified": 0,
+      "review": 0,
+      "not_qualified": 14
+    }
+  },
+  "by_category": {
+    "clear_funding": {
+      "cases": 2,
+      "correct": 2
+    },
+    "funding_above_cap": {
+      "cases": 2,
+      "correct": 2
+    },
+    "funding_outside_window": {
+      "cases": 2,
+      "correct": 2
+    },
+    "missing_funding_amount": {
+      "cases": 2,
+      "correct": 2
+    },
+    "strong_ai_intent": {
+      "cases": 2,
+      "correct": 2
+    },
+    "strong_expansion": {
+      "cases": 2,
+      "correct": 2
+    },
+    "weak_generic_news": {
+      "cases": 2,
+      "correct": 2
+    },
+    "irrelevant_mention": {
+      "cases": 2,
+      "correct": 2
+    },
+    "namesake_noisy": {
+      "cases": 2,
+      "correct": 2
+    },
+    "duplicate_coverage": {
+      "cases": 2,
+      "correct": 2
+    },
+    "conflicting_evidence": {
+      "cases": 2,
+      "correct": 2
+    },
+    "insufficient_evidence": {
+      "cases": 2,
+      "correct": 2
+    },
+    "ambiguous_review": {
+      "cases": 2,
+      "correct": 2
+    },
+    "identity_geography": {
+      "cases": 2,
+      "correct": 2
+    }
+  },
+  "mismatches": []
+}

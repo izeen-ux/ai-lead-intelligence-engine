@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI Lead Intelligence Engine - Commands Handbook</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 16mm 15mm; }
+  * { box-sizing: border-box; }
+  body { font: 10.5pt/1.5 "Segoe UI", system-ui, sans-serif; color: #111827; margin: 0; }
+  .cover { height: 250mm; display: flex; flex-direction: column; justify-content: center; page-break-after: always; }
+  .cover .tag { color: #4f46e5; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-size: 10pt; }
+  .cover h1 { font-size: 30pt; margin: 6mm 0 3mm; letter-spacing: -.02em; line-height: 1.1; }
+  .cover p { color: #4b5563; font-size: 12pt; max-width: 150mm; }
+  .cover .meta { margin-top: 14mm; color: #6b7280; font-size: 10pt; border-top: 1px solid #e5e7eb; padding-top: 4mm; }
+  h2 { font-size: 15pt; margin: 9mm 0 2mm; padding-bottom: 2mm; border-bottom: 2px solid #4f46e5; page-break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 5mm 0 1.5mm; color: #1f2937; page-break-after: avoid; }
+  p { margin: 1.5mm 0; }
+  .note { background: #f3f4f6; border-left: 3px solid #6b7280; padding: 2.5mm 4mm; margin: 3mm 0; font-size: 9.5pt; border-radius: 0 4px 4px 0; }
+  .warn { background: #fef3c7; border-left-color: #b45309; }
+  table.cmd { width: 100%; border-collapse: collapse; margin: 2mm 0 3mm; page-break-inside: auto; }
+  table.cmd tr { page-break-inside: avoid; }
+  table.cmd th { text-align: left; font-size: 8.5pt; text-transform: uppercase; letter-spacing: .06em; color: #6b7280; padding: 1.5mm 2mm; border-bottom: 1px solid #d1d5db; }
+  table.cmd td { padding: 2mm; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  table.cmd td:first-child { width: 36%; font-weight: 600; color: #1f2937; }
+  code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 9pt; background: #eef2ff; color: #312e81; padding: .4mm 1.2mm; border-radius: 3px; word-break: break-word; }
+  pre { font-family: "Cascadia Mono", Consolas, monospace; font-size: 9pt; background: #111827; color: #e5e7eb; padding: 3mm 4mm; border-radius: 4px; white-space: pre-wrap; word-break: break-word; margin: 2mm 0; page-break-inside: avoid; }
+  .toc { columns: 2; column-gap: 10mm; font-size: 10pt; }
+  .toc div { margin: 1mm 0; break-inside: avoid; }
+  .step { counter-increment: step; }
+  ol { margin: 1mm 0 2mm 5mm; padding: 0; } li { margin: 1mm 0; }
+  .small { font-size: 9pt; color: #6b7280; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="tag">Commands Handbook</div>
+  <h1>AI Lead Intelligence Engine</h1>
+  <p>Every command used to install, start, run, monitor, share and maintain the lead engine - grouped by task, with what each one does.</p>
+  <div class="meta">Version of 14 October 2026 · Windows PowerShell · Run every command inside the project folder (for example <code>C:\lead-intel</code>) unless the step says otherwise.</div>
+</section>
+
+<h2>Contents</h2>
+<div class="toc">
+  <div>1. Install on a new laptop (one time)</div>
+  <div>2. Start and stop every day</div>
+  <div>3. Live mode: switch the Run button on and off</div>
+  <div>4. Open the dashboard</div>
+  <div>5. Find leads</div>
+  <div>6. API keys: add, check, remove</div>
+  <div>7. Credits and reset dates</div>
+  <div>8. Google Sheet</div>
+  <div>9. Share the dashboard with others (link)</div>
+  <div>10. Backup and restore the database</div>
+  <div>11. Health checks and troubleshooting</div>
+  <div>12. Developer checks</div>
+  <div>13. Hand the project to another laptop (zip)</div>
+  <div>14. Quick reference card</div>
+</div>
+
+<div class="note warn"><b>Safety.</b> The <code>.env</code> file and the <code>secrets</code> folder contain every API key. Never paste keys into chats, e-mails or screenshots, and never upload the project folder publicly. Add keys only with the key command in section 6.</div>
+
+<h2>1. Install on a new laptop (one time)</h2>
+<p>Needs Windows 10/11, 8 GB free RAM, about 12 GB free disk and internet. The first start downloads about 4 GB.</p>
+<table class="cmd">
+<tr><th>Step</th><th>Command</th></tr>
+<tr><td>1. Install Docker Desktop (runs all services)</td><td><code>winget install --id Docker.DockerDesktop</code><br><span class="small">Restart if asked, open Docker Desktop, wait for "Engine running".</span></td></tr>
+<tr><td>2. Install uv (runs the helper scripts, brings its own Python)</td><td><code>winget install --id astral-sh.uv</code><br><span class="small">Close PowerShell and open a new window afterwards.</span></td></tr>
+<tr><td>3. Check both tools</td><td><code>docker --version</code><br><code>uv --version</code></td></tr>
+<tr><td>4. Go to the unzipped project folder</td><td><code>cd C:\lead-intel</code></td></tr>
+<tr><td>5. Remove the old laptop's Python environment</td><td><code>Remove-Item -Recurse -Force .venv -ErrorAction SilentlyContinue</code></td></tr>
+<tr><td>6. Install the Python libraries</td><td><code>uv sync</code></td></tr>
+<tr><td>7. Check the copy (must end with READY)</td><td><code>uv run python scripts/setup_new_machine.py</code></td></tr>
+<tr><td>8. Create the database storage</td><td><code>docker volume create lead-intel-pgdata</code></td></tr>
+<tr><td>9. Start only the database (wait 20 s)</td><td><code>docker compose up -d postgres</code></td></tr>
+<tr><td>10. Load the existing leads from the backup</td><td><code>uv run python scripts/setup_new_machine.py --load-data backups\lead_intel_20261013T095504Z.dump</code><br><span class="small">Use the newest file in the backups folder. Refuses to overwrite a database that already has data.</span></td></tr>
+<tr><td>11. Build and start everything (10-25 min first time)</td><td><code>docker compose up -d --build</code></td></tr>
+<tr><td>12. Health check (last line: SMOKE CHECK PASSED)</td><td><code>uv run python scripts/smoke_check.py</code></td></tr>
+<tr><td>13. Check the API keys</td><td><code>uv run python scripts/keys.py list</code></td></tr>
+<tr><td>14. Switch the Run button on</td><td><code>uv run python scripts/live_mode.py on</code></td></tr>
+</table>
+
+<h2>2. Start and stop every day</h2>
+<table class="cmd">
+<tr><th>I want to</th><th>Command</th></tr>
+<tr><td>Start all services (safe mode)</td><td><code>docker compose up -d</code></td></tr>
+<tr><td>Start and make Run work (live)</td><td><code>docker compose up -d</code> then <code>uv run python scripts/live_mode.py on</code></td></tr>
+<tr><td>Stop everything (data is kept)</td><td><code>docker compose stop</code></td></tr>
+<tr><td>See what is running</td><td><code>docker compose ps</code></td></tr>
+<tr><td>Rebuild after a code update</td><td><code>docker compose up -d --build</code> then <code>uv run python scripts/live_mode.py on</code></td></tr>
+<tr><td>Restart only the app</td><td><code>docker compose restart app</code></td></tr>
+</table>
+<div class="note">Docker Desktop must be open ("Engine running") before any <code>docker</code> command works. After a laptop restart, open Docker Desktop first.</div>
+
+<h2>3. Live mode: switch the Run button on and off</h2>
+<p>Safe mode = nothing can spend credits or write to the Google Sheet (default after every start). Live mode = real searches, real credits.</p>
+<table class="cmd">
+<tr><th>I want to</th><th>Command</th></tr>
+<tr><td>Switch Run on (live)</td><td><code>uv run python scripts/live_mode.py on</code></td></tr>
+<tr><td>Switch Run off (safe)</td><td><code>uv run python scripts/live_mode.py off</code></td></tr>
+<tr><td>Which mode is running?</td><td><code>uv run python scripts/live_mode.py status</code></td></tr>
+</table>
+<p class="small">After switching, click Refresh on the dashboard. The chip at the top shows LIVE (green) or SAFE (orange). <code>.env</code> is never changed by this command.</p>
+
+<h2>4. Open the dashboard</h2>
+<table class="cmd">
+<tr><th>Step</th><th>Command / action</th></tr>
+<tr><td>1. Open in the browser</td><td><code>http://127.0.0.1:8000/dashboard</code></td></tr>
+<tr><td>2. Copy the unlock token to the clipboard (not shown on screen)</td><td><code>uv run python scripts/copy_operator_token.py</code></td></tr>
+<tr><td>3. Unlock</td><td>Click the box on the page, press Ctrl+V, click Unlock. The browser remembers it; "Lock" in the header forgets it.</td></tr>
+<tr><td>Demo dashboard with sample data (no database, no keys)</td><td><code>uv run python scripts/run_dashboard.py --demo --port 8010</code></td></tr>
+</table>
+
+<h2>5. Find leads</h2>
+<h3>From the dashboard (recommended)</h3>
+<ol>
+  <li>Live mode on (section 3), dashboard refreshed.</li>
+  <li><b>Find new leads</b>: type what you look for - a sentence (for example <i>healthtech startups that raised funding recently</i>) or search words, one search per line. Empty = saved default searches.</li>
+  <li>Pick the <b>Lead owner</b>, set <b>Leads wanted</b> (1-10) and <b>Companies checked per round</b> (25 recommended), click <b>Run</b>.</li>
+  <li>One round takes about 4-5 minutes; the run repeats rounds (at most 5) until it has the wanted leads. Do not click Run twice - the page follows the running run.</li>
+  <li>Results: summary under the Run button, new rows in the Google Sheet tab "Ai Leads", the Leads table, and "Credits used by this run".</li>
+</ol>
+<h3>From PowerShell (same pipeline, scriptable)</h3>
+<table class="cmd">
+<tr><th>I want to</th><th>Command</th></tr>
+<tr><td>Practice run on sample data (no keys, no cost)</td><td><code>uv run python scripts/run_pipeline.py</code></td></tr>
+<tr><td>Plan on real data, write nothing</td><td><code>uv run python scripts/run_pipeline.py --db --stages all --limit 10</code></td></tr>
+<tr><td>Real run with a prompt and an owner (live mode must be on for this process)</td><td><code>$env:PROVIDER_MODE="live"; $env:ALLOW_PAID_PROVIDER_CALLS="true"; $env:ALLOW_SHEETS_WRITES="true"</code><br><code>uv run python scripts/run_pipeline.py --db --live --stages all --limit 15 --owner Meera --prompt "startup raises Rs 2 crore seed funding;healthtech startup raises pre-seed"</code><br><code>Remove-Item Env:PROVIDER_MODE; Remove-Item Env:ALLOW_PAID_PROVIDER_CALLS; Remove-Item Env:ALLOW_SHEETS_WRITES</code></td></tr>
+<tr><td>Only AI analysis + sheet for waiting leads</td><td>(same three env lines) <code>uv run python scripts/run_pipeline.py --db --live --stages analysis,export --limit 10</code></td></tr>
+<tr><td>List recent runs</td><td><code>uv run python scripts/run_pipeline.py --db --status</code></td></tr>
+<tr><td>Free a stuck run ("already in progress")</td><td><code>uv run python scripts/run_pipeline.py --db --recover</code></td></tr>
+</table>
+<p class="small">Stages in order: discovery, prescreen, website, signals, qualification, enrichment, analysis, export (<code>--stages all</code> = all eight).</p>
+
+<h2>6. API keys: add, check, remove</h2>
+<p>Several keys per provider are supported for Apify, Firecrawl, Hunter and Apollo: the first is used, the others are backups that take over automatically when a key is refused or out of credits. Claude and OpenAI have one key each.</p>
+<table class="cmd">
+<tr><th>I want to</th><th>Command</th></tr>
+<tr><td>See every key: accepted?, used, date credits come back</td><td><code>uv run python scripts/keys.py list</code></td></tr>
+<tr><td>Add an Apify key (backup)</td><td><code>uv run python scripts/keys.py add apify</code></td></tr>
+<tr><td>Add a Firecrawl key</td><td><code>uv run python scripts/keys.py add firecrawl</code></td></tr>
+<tr><td>Add a Hunter key</td><td><code>uv run python scripts/keys.py add hunter</code></td></tr>
+<tr><td>Add an Apollo key</td><td><code>uv run python scripts/keys.py add apollo</code></td></tr>
+<tr><td>Replace the Claude key</td><td><code>uv run python scripts/keys.py add claude</code></td></tr>
+<tr><td>Remove a dead key (number from <code>list</code>)</td><td><code>uv run python scripts/keys.py remove firecrawl 2</code></td></tr>
+<tr><td>Save a key the provider refuses anyway (rare)</td><td><code>uv run python scripts/keys.py add apify --force</code></td></tr>
+<tr><td>Check the Claude key from inside the app (free)</td><td><code>docker compose exec -T app python -c "import asyncio; from app.core.config import Settings; from app.providers.anthropic import AnthropicAdapter; print(asyncio.run(AnthropicAdapter(Settings()).check_model()))"</code></td></tr>
+</table>
+<div class="note"><b>How "add" works:</b> paste the key at the hidden prompt (right-click or Ctrl+V, then Enter). Extra spaces, quotes, <code>Bearer</code> or <code>NAME=</code> are removed. The key is checked with the provider's free account endpoint; a refused key is not saved. The app is then restarted in the same mode so the key is used at once. A used-up key is tried again every 6 hours, so it comes back by itself when the provider's new month starts.</div>
+
+<h2>7. Credits and reset dates</h2>
+<table class="cmd">
+<tr><th>Where</th><th>What you see</th></tr>
+<tr><td>Dashboard → Credits (live mode)</td><td>Left / used / limit per provider, all keys added together, one line per key, and "New credits: 25 Oct · in 11 days".</td></tr>
+<tr><td>Dashboard → Credit calendar</td><td>This month and next month; green days = a provider gives new credits; "Coming up" list.</td></tr>
+<tr><td>Dashboard → Credits per run</td><td>What each run spent (Firecrawl, Apify, Hunter) and what the free pre-screen saved.</td></tr>
+<tr><td>PowerShell</td><td><code>uv run python scripts/keys.py list</code></td></tr>
+</table>
+<p class="small">Reset dates come from the providers themselves (Apify billing cycle, Firecrawl billing period, Hunter reset date). Apollo and Claude publish none: Apollo shows the app's monthly budget, Claude uses prepaid credits.</p>
+
+<h2>8. Google Sheet</h2>
+<table class="cmd">
+<tr><th>I want to</th><th>Command</th></tr>
+<tr><td>Check access to the sheet (reads only)</td><td><code>uv run python scripts/export_leads_to_sheets.py --db --check</code></td></tr>
+<tr><td>Preview what would be written</td><td><code>uv run python scripts/export_leads_to_sheets.py --db --dry-run</code></td></tr>
+<tr><td>Write leads now (sheet writes allowed for this process)</td><td><code>$env:ALLOW_SHEETS_WRITES="true"; uv run python scripts/export_leads_to_sheets.py --db --live; Remove-Item Env:ALLOW_SHEETS_WRITES</code></td></tr>
+</table>
+<div class="note">Tab "Ai Leads" (a new tab "Ai Leads 2" starts after 500 leads). The team may add own columns, sort, filter and colour. Do not rename the header names in row 1 and do not change column A (<code>lead_id</code>); the app writes by header name.</div>
+
+<h2>9. Share the dashboard with others (link)</h2>
+<table class="cmd">
+<tr><th>Step</th><th>Command</th></tr>
+<tr><td>1. Install Cloudflare's tunnel tool (once)</td><td><code>winget install --id Cloudflare.cloudflared</code><br><span class="small">Then open a NEW PowerShell window.</span></td></tr>
+<tr><td>2. App running (live if others should Run)</td><td><code>docker compose up -d</code> · <code>uv run python scripts/live_mode.py on</code></td></tr>
+<tr><td>3. Start the tunnel (keep this window open)</td><td><code>cloudflared tunnel --url http://127.0.0.1:8000</code></td></tr>
+<tr><td>4. Share</td><td>Send the printed <code>https://....trycloudflare.com</code> address with <code>/dashboard</code> at the end, plus the token (copy it with <code>uv run python scripts/copy_operator_token.py</code>) through a private channel.</td></tr>
+<tr><td>5. Stop sharing</td><td>Press Ctrl+C in the tunnel window. The link stops working at once.</td></tr>
+</table>
+<p class="small">The link changes every time the tunnel starts. The laptop, Docker and the tunnel window must stay on while others use it.</p>
+
+<h2>10. Backup and restore the database</h2>
+<table class="cmd">
+<tr><th>I want to</th><th>Command</th></tr>
+<tr><td>Make a backup (backups folder, newest 14 kept)</td><td><code>uv run python scripts/backup_db.py</code></td></tr>
+<tr><td>Prove a backup can be restored (into a scratch database)</td><td><code>uv run python scripts/restore_db.py --file backups\lead_intel_20261013T095504Z.dump --drop-after</code></td></tr>
+<tr><td>Load a backup on a new laptop (empty database only)</td><td><code>uv run python scripts/setup_new_machine.py --load-data backups\&lt;file&gt;.dump</code></td></tr>
+</table>
+
+<h2>11. Health checks and troubleshooting</h2>
+<table class="cmd">
+<tr><th>Problem / check</th><th>Command / fix</th></tr>
+<tr><td>Full health check (free, offline)</td><td><code>uv run python scripts/smoke_check.py</code></td></tr>
+<tr><td>Why did something fail?</td><td><code>docker compose logs app --tail 50</code></td></tr>
+<tr><td>Logs of the key/enrichment service</td><td><code>docker compose logs enrichment-kit --tail 30</code></td></tr>
+<tr><td>"docker" or "uv" is not recognized</td><td>Close PowerShell, open a new window.</td></tr>
+<tr><td>"cannot connect to the Docker API" / Docker errors 500</td><td>Quit Docker Desktop from the tray icon, open it again, wait for "Engine running".</td></tr>
+<tr><td>Run button says "switched OFF"</td><td><code>uv run python scripts/live_mode.py on</code>, then Refresh.</td></tr>
+<tr><td>"a pipeline run is already in progress"</td><td>Wait for it (the page shows it), or <code>uv run python scripts/run_pipeline.py --db --recover</code></td></tr>
+<tr><td>Dashboard empty / "token not accepted"</td><td><code>uv run python scripts/copy_operator_token.py</code> and unlock again.</td></tr>
+<tr><td>AI analysis "not available"</td><td><code>uv run python scripts/keys.py list</code> - the Claude key must be "accepted" and have credits.</td></tr>
+<tr><td>Sheet step fails with "row 1 ... changed"</td><td>Restore the header name the message names in row 1 of the sheet.</td></tr>
+<tr><td>Port 5432 / 8000 already in use</td><td>Close the other program (often another PostgreSQL), then <code>docker compose up -d</code>.</td></tr>
+</table>
+
+<h2>12. Developer checks</h2>
+<table class="cmd">
+<tr><th>Check</th><th>Command</th></tr>
+<tr><td>Database migrations match the code</td><td><code>uv run alembic check</code></td></tr>
+<tr><td>All tests with coverage</td><td><code>uv run pytest -W error::DeprecationWarning --cov=app</code></td></tr>
+<tr><td>Lint / format / types</td><td><code>uv run ruff check .</code> · <code>uv run ruff format --check .</code> · <code>uv run mypy app tests scripts</code></td></tr>
+<tr><td>Enrichment sidecar tests</td><td><code>cd sidecars/enrichment-kit; npm test</code></td></tr>
+<tr><td>Apply database migrations</td><td><code>uv run alembic upgrade head</code></td></tr>
+</table>
+
+<h2>13. Hand the project to another laptop (zip)</h2>
+<ol>
+  <li>Make a fresh backup: <code>uv run python scripts/backup_db.py</code></li>
+  <li>Stop the app: <code>docker compose stop</code></li>
+  <li>Zip the project folder. Include <code>.env</code>, <code>secrets\google\service-account.json</code>, <code>backups\</code> and <code>sidecars\</code>. Leave out <code>.venv</code> (198 MB, rebuilt on the new laptop) and <code>.git</code>.</li>
+  <li>Send the zip privately (it contains every key). On the new laptop follow section 1.</li>
+</ol>
+<div class="note">Both laptops then share the same API keys and Google Sheet but have separate databases. Agree that one laptop does the live runs, or give the second laptop its own sheet ID in its <code>.env</code>.</div>
+
+<h2>14. Quick reference card</h2>
+<pre>START          docker compose up -d
+RUN ON         uv run python scripts/live_mode.py on
+RUN OFF        uv run python scripts/live_mode.py off
+STATUS         docker compose ps            uv run python scripts/live_mode.py status
+STOP           docker compose stop
+DASHBOARD      http://127.0.0.1:8000/dashboard
+TOKEN          uv run python scripts/copy_operator_token.py
+KEYS           uv run python scripts/keys.py list
+ADD KEY        uv run python scripts/keys.py add apify|firecrawl|hunter|apollo|claude
+SHARE          cloudflared tunnel --url http://127.0.0.1:8000
+BACKUP         uv run python scripts/backup_db.py
+HEALTH         uv run python scripts/smoke_check.py
+LOGS           docker compose logs app --tail 50
+STUCK RUN      uv run python scripts/run_pipeline.py --db --recover
+REBUILD        docker compose up -d --build</pre>
+
+</body>
+</html>
