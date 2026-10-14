@@ -4,7 +4,7 @@
 
 <h3>Find young companies that just raised money — and know exactly why they are worth a call.</h3>
 
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+[![CI](https://github.com/izeen-ux/ai-lead-intelligence-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/izeen-ux/ai-lead-intelligence-engine/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-4f46e5.svg)](LICENSE)
 ![Python 3.13](https://img.shields.io/badge/python-3.13-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
@@ -91,8 +91,8 @@ flowchart LR
 **Try the dashboard in one minute (sample data, no keys, no cost):**
 
 ```bash
-git clone https://github.com/OWNER/REPO.git
-cd REPO
+git clone https://github.com/izeen-ux/ai-lead-intelligence-engine.git
+cd ai-lead-intelligence-engine
 uv sync
 uv run python scripts/run_dashboard.py --demo --port 8010
 ```
@@ -219,4 +219,4 @@ Issues and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## ⭐ Star history
 
-[![Star History Chart](https://api.star-history.com/svg?repos=OWNER/REPO&type=Date)](https://star-history.com/#OWNER/REPO&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=izeen-ux/ai-lead-intelligence-engine&type=Date)](https://star-history.com/#izeen-ux/ai-lead-intelligence-engine&Date)

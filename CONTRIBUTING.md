@@ -5,8 +5,8 @@ Thanks for helping improve the AI Lead Intelligence Engine!
 ## Getting started
 
 ```bash
-git clone https://github.com/OWNER/REPO.git
-cd REPO
+git clone https://github.com/izeen-ux/ai-lead-intelligence-engine.git
+cd ai-lead-intelligence-engine
 uv sync
 uv run python scripts/run_dashboard.py --demo --port 8010   # sample data, no keys
 ```
