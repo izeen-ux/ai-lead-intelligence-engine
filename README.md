@@ -19,7 +19,12 @@
 
 ---
 
-<p align="center"><img src="docs/media/demo.gif" alt="Dashboard demo" width="92%"></p>
+<h3 align="center">🎬 1-minute intro</h3>
+
+<p align="center">
+  <a href="docs/media/lead-engine-demo.mp4"><img src="docs/media/intro.gif" alt="Intro video: from a one-line brief to qualified leads" width="92%"></a>
+</p>
+<p align="center"><a href="docs/media/lead-engine-demo.mp4"><b>▶ Watch the full video with sound (1 min)</b></a> · <a href="https://github.com/izeen-ux/ai-lead-intelligence-engine/releases/latest">download from the latest release</a></p>
 
 **AI Lead Intelligence Engine** is a self-hosted B2B lead pipeline. It searches news, LinkedIn, X and Reddit for startups that recently raised a small round or are visibly growing, checks every company against fixed qualification rules, confirms its official website, finds a verified founder e-mail, and asks **Claude** for an evidence-based outreach angle. Results land in a **Google Sheet** and a clean web **dashboard**.
 
@@ -84,7 +89,7 @@ flowchart LR
 | **Credits & reset calendar** | **Leads** |
 | <img src="docs/media/credits.png" alt="Credits"> | <img src="docs/media/leads.png" alt="Leads"> |
 
-<sub>Screenshots use the built-in demo data (synthetic companies). Video: [`docs/media/demo.mp4`](docs/media/demo.mp4) · light theme: [`overview-light.png`](docs/media/overview-light.png).</sub>
+<sub>Screenshots use the built-in demo data (synthetic companies). Intro video: [`docs/media/lead-engine-demo.mp4`](docs/media/lead-engine-demo.mp4) · screen recording: [`docs/media/demo.mp4`](docs/media/demo.mp4) · light theme: [`overview-light.png`](docs/media/overview-light.png).</sub>
 
 ## 🚀 Quick start
 
